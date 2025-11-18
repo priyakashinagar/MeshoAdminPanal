@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+/* Theme variables */
+:root {
+  --primary: #9333ea;
+  --secondary: #ec4899;
+  --destructive: #dc2626;
+}
+
+.dark {
+  --primary: #a78bfa;
+  --secondary: #f472b6;
+  --destructive: #ef4444;
+}
+
+.black-theme {
+  --primary: #000000;
+  --secondary: #222222;
+  --destructive: #ef4444;
+}
+
+.white-theme {
+  --primary: #ffffff;
+  --secondary: #f3f4f6;
+  --destructive: #dc2626;
+}
+
+@layer base {
+  body {
+    @apply bg-purple-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50;
+  }
+  .black-theme body {
+    @apply bg-black text-white;
+  }
+  .white-theme body {
+    @apply bg-white text-slate-900;
+  }
+}

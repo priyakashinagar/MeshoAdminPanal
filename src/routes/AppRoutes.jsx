@@ -4,6 +4,9 @@ import Login from '../pages/Login';
 import Dashboard from '../pages/Dashboard';
 import SellerRoutes from '../sellerAdminPanal/SellerRoutes';
 import Products from '../pages/Products';
+import Earnings from '../sellerAdminPanal/Earnings';
+import AdminLayout from '../components/layout/AdminLayout';
+import Payouts from '../sellerAdminPanal/Payouts';
 import Orders from '../pages/Orders';
 import Users from '../pages/Users';
 import Categories from '../pages/Categories';
@@ -76,6 +79,8 @@ const AppRoutes = () => (
             <Route path="/shipping" element={<Shipping />} />
             <Route path="/payments" element={<Payments />} />
             <Route path="/payment" element={<Payments />} />
+            <Route path="/earnings" element={<AdminLayout><Earnings /></AdminLayout>} />
+            <Route path="/payouts" element={<AdminLayout><Payouts /></AdminLayout>} />
             <Route path="/settings" element={<StoreSettings />} />
             <Route path="/settings/payment" element={<Payments />} />
             <Route path="/store-settings" element={<StoreSettings />} />

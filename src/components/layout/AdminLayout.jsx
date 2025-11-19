@@ -30,6 +30,14 @@ const navItems = [
     ],
   },
   {
+    label: 'Earnings',
+    icon: CreditCard,
+    submenu: [
+      { href: '/earnings', label: 'Earnings', icon: CreditCard },
+      { href: '/payouts', label: 'Payouts', icon: CreditCard },
+    ],
+  },
+  {
     label: 'Operations',
     icon: Cog,
     submenu: [
@@ -108,7 +116,7 @@ const AdminLayout = ({ children }) => {
 
       {/* Sidebar - responsive */}
       <aside
-        className={`bg-gradient-to-b from-purple-300 to-purple-100 dark:from-purple-900 dark:to-purple-950 fixed top-0 left-0 h-full min-h-screen border-r border-purple-200 overflow-y-auto shadow-lg z-[100] transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:w-64 w-72`}
+        className={`bg-gradient-to-b from-purple-300 to-purple-100 fixed top-0 left-0 h-full min-h-screen border-r border-purple-200 overflow-y-auto shadow-lg z-[100] transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:w-64 w-72`}
         style={{ color: '#59168B' }}
       >
         {/* Close icon for mobile */}

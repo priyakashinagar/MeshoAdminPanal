@@ -19,16 +19,27 @@ export default function LoginPage() {
     setError("");
     setIsLoading(true);
 
-    // Dummy login logic
+    // Dummy login logic for admin and seller
+    let user = null;
     if (email === "admin@example.com" && password === "password") {
+      user = { email, role: "admin" };
+    } else if (email === "seller@example.com" && password === "password") {
+      user = { email, role: "seller" };
+    }
+    if (user) {
       localStorage.setItem("authToken", "demo_token_" + Date.now());
       localStorage.setItem("userEmail", email);
-      dispatch(login({ email }));
+      localStorage.setItem("user", JSON.stringify(user));
+      dispatch(login(user));
       setTimeout(() => {
-        navigate("/");
+        if (user.role === "seller") {
+          navigate("/seller");
+        } else {
+          navigate("/");
+        }
       }, 300);
     } else {
-      setError("Invalid credentials. Use admin@example.com / password");
+      setError("Invalid credentials. Use admin@example.com or seller@example.com / password");
       setIsLoading(false);
     }
   };
@@ -83,9 +94,8 @@ export default function LoginPage() {
 
         <div className="mt-6 pt-6 border-t border-purple-200 dark:border-purple-800 text-center text-sm text-gray-600 dark:text-gray-400">
           <p className="font-medium mb-2">Demo Credentials:</p>
-          <p>Email: admin@example.com</p>
-          <p>Password: password</p>
-          <p className="mt-3 text-xs">Or use any email/password</p>
+          <p>Admin: admin@example.com / password</p>
+          <p>Seller: seller@example.com / password</p>
         </div>
       </Card>
     </div>

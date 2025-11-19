@@ -74,7 +74,7 @@ const Categories = () => {
           </div>
           <button
             type="button"
-            className="bg-gradient-to-r from-purple-600 to-pink-500 text-white px-5 py-2 rounded-xl shadow ml-4 font-semibold text-base"
+            className="bg-gradient-to-r from-purple-600 to-pink-500 text-white px-5 py-2 rounded-xl shadow ml-4 font-semibold text-base white-space-nowrap"
             onClick={() => setShowModal(true)}
           >
             Add Category

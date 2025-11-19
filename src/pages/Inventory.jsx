@@ -153,10 +153,10 @@ const Inventory = () => {
           </div>
         )}
 
-        {/* Dashboard Cards - Always display in a single row for md and above */}
-        <div className="w-full overflow-x-auto mb-4">
-          <div className="flex flex-row gap-4 min-w-[700px]">
-            <Card className="p-6 border-0 shadow-lg bg-white dark:bg-slate-900 min-w-[220px]">
+        {/* Dashboard Cards - Full width on laptop screens */}
+        <div className="w-full mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+            <Card className="p-6 border-0 shadow-lg bg-white dark:bg-slate-900 w-full">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-purple-600 dark:text-purple-300 mb-2">Total Items</p>
@@ -165,7 +165,7 @@ const Inventory = () => {
                 <Package className="text-pink-600 dark:text-pink-400" size={40} />
               </div>
             </Card>
-            <Card className="p-6 border-0 shadow-lg bg-white dark:bg-slate-900 min-w-[220px]">
+            <Card className="p-6 border-0 shadow-lg bg-white dark:bg-slate-900 w-full">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-purple-600 dark:text-purple-300 mb-2">Low Stock Items</p>
@@ -174,7 +174,7 @@ const Inventory = () => {
                 <AlertTriangle className="text-pink-600 dark:text-pink-400" size={40} />
               </div>
             </Card>
-            <Card className="p-6 border-0 shadow-lg bg-white dark:bg-slate-900 min-w-[220px]">
+            <Card className="p-6 border-0 shadow-lg bg-white dark:bg-slate-900 w-full">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-purple-600 dark:text-purple-300 mb-2">Total Products</p>
@@ -210,7 +210,7 @@ const Inventory = () => {
                     <td className="px-3 py-4 font-normal not-italic text-purple-900">{item.minimum}</td>
                     <td className="px-3 py-4 font-normal not-italic text-purple-900">{item.reorder}</td>
                     <td className="px-3 py-4 font-normal not-italic">
-                      <span className={`px-3 py-1 rounded-full text-sm font-normal not-italic ${item.current < item.minimum ? 'bg-pink-100 text-pink-700' : 'bg-green-100 text-green-700'}`}>{item.current < item.minimum ? 'Low Stock' : 'OK'}</span>
+                      <span className={`px-3 py-1 rounded-full text-sm font-normal not-italic white-space-nowrap ${item.current < item.minimum ? 'bg-pink-100 text-pink-700' : 'bg-green-100 text-green-700'}`}>{item.current < item.minimum ? 'Low Stock' : 'OK'}</span>
                     </td>
                     <td className="px-3 py-4 font-normal not-italic">
                       <button className="text-red-600 font-bold hover:underline">Delete</button>

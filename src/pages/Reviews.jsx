@@ -66,7 +66,7 @@ const Reviews = () => {
           </div>
           <button
             type="button"
-            className="bg-gradient-to-r from-purple-600 to-pink-500 text-white px-5 py-2 rounded-xl shadow ml-4 font-semibold text-base not-italic font-normal"
+            className="bg-gradient-to-r from-purple-600 to-pink-500 text-white px-5 py-2 rounded-xl shadow ml-4 font-semibold text-base not-italic font-normal white-space-nowrap"
             style={{fontStyle:'normal'}}
             onClick={() => setShowModal(true)}
           >

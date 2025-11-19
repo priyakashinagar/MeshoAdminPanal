@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from '../pages/Login';
 import Dashboard from '../pages/Dashboard';
+import SellerRoutes from '../sellerAdminPanal/SellerRoutes';
 import Products from '../pages/Products';
 import Orders from '../pages/Orders';
 import Users from '../pages/Users';
@@ -54,9 +55,33 @@ const AppRoutes = () => (
               </ProtectedRoute>
             } />
       <Route path="/login" element={<Login />} />
-      <Route path="/" element={
+      {/* Seller routes only for /seller path */}
+      <Route path="/seller/*" element={
         <ProtectedRoute>
-          <Dashboard />
+          <SellerRoutes />
+        </ProtectedRoute>
+      } />
+      {/* Admin and general routes for / */}
+      <Route path="/*" element={
+        <ProtectedRoute>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/categories" element={<Categories />} />
+            <Route path="/inventory" element={<Inventory />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/sales" element={<SalesReports />} />
+            <Route path="/users" element={<Users />} />
+            <Route path="/reviews" element={<Reviews />} />
+            <Route path="/shipping" element={<Shipping />} />
+            <Route path="/payments" element={<Payments />} />
+            <Route path="/payment" element={<Payments />} />
+            <Route path="/settings" element={<StoreSettings />} />
+            <Route path="/settings/payment" element={<Payments />} />
+            <Route path="/store-settings" element={<StoreSettings />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </ProtectedRoute>
       } />
       <Route path="/products" element={

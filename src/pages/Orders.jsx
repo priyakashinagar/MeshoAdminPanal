@@ -35,15 +35,16 @@ const Orders = () => {
 
   return (
     <AdminLayout>
-      <div className="space-y-8 relative">
-        <div className="flex justify-between items-center">
+      <div className="space-y-8">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <h1 className="text-3xl font-bold text-purple-900">Orders Management</h1>
           <Button onClick={() => setShowForm(true)} className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">Add Order</Button>
         </div>
         {/* Table faded when modal is open */}
         <div className={showForm ? "opacity-40 pointer-events-none blur-sm" : "opacity-100"}>
           <Card className="border border-purple-200 shadow-lg overflow-hidden bg-white">
-            <table className="w-full">
+            <div className="w-full overflow-x-auto">
+              <table className="min-w-[600px] w-full">
               <thead style={{ background: '#9E1CF0' }} className="text-white">
                 <tr>
                   <th className="px-6 py-4 text-left font-semibold">Order ID</th>
@@ -69,6 +70,7 @@ const Orders = () => {
                 ))}
               </tbody>
             </table>
+            </div>
           </Card>
         </div>
         {/* Modal Form with blurred background */}

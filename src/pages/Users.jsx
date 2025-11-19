@@ -32,7 +32,7 @@ const Users = () => {
   return (
     <AdminLayout>
       <div className="space-y-8">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <h1 className="text-3xl font-bold text-purple-900">Users Management</h1>
           <Button onClick={() => setShowForm(true)} className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">Add User</Button>
         </div>
@@ -64,37 +64,39 @@ const Users = () => {
           </Card>
         )}
         <Card className="border border-purple-200 shadow-lg overflow-hidden bg-white">
-          <table className="w-full">
-            <thead style={{ background: '#9E1CF0' }} className="text-white">
-              <tr>
-                <th className="px-6 py-4 text-left font-semibold">Name</th>
-                <th className="px-6 py-4 text-left font-semibold">Email</th>
-                <th className="px-6 py-4 text-left font-semibold">Role</th>
-                <th className="px-6 py-4 text-left font-semibold">Status</th>
-                <th className="px-6 py-4 text-left font-semibold">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user, idx) => (
-                <tr key={user.id} className={`hover:bg-purple-50 transition-colors${idx === users.length - 1 ? '' : ' border-b border-purple-200'}`}> 
-                  <td className="px-4 py-2 font-medium text-slate-900">{user.name}</td>
-                  <td className="px-4 py-2">{user.email}</td>
-                  <td className="px-4 py-2">{user.role}</td>
-                  <td className="px-4 py-2">
-                    <select className="px-2 py-1 rounded border border-purple-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-purple-400">
-                      <option value="Approved">Approved</option>
-                      <option value="Cancel">Cancel</option>
-                      <option value="Completed">Completed</option>
-                      <option value="Pending">Pending</option>
-                    </select>
-                  </td>
-                  <td className="px-4 py-2 flex gap-2">
-                    <Button size="sm" onClick={() => handleDelete(user.id)} className="text-red-600 px-4 py-1 font-semibold">Delete</Button>
-                  </td>
+          <div className="w-full overflow-x-auto">
+            <table className="min-w-[600px] w-full">
+              <thead style={{ background: '#9E1CF0' }} className="text-white">
+                <tr>
+                  <th className="px-6 py-4 text-left font-semibold">Name</th>
+                  <th className="px-6 py-4 text-left font-semibold">Email</th>
+                  <th className="px-6 py-4 text-left font-semibold">Role</th>
+                  <th className="px-6 py-4 text-left font-semibold">Status</th>
+                  <th className="px-6 py-4 text-left font-semibold">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {users.map((user, idx) => (
+                  <tr key={user.id} className={`hover:bg-purple-50 transition-colors${idx === users.length - 1 ? '' : ' border-b border-purple-200'}`}> 
+                    <td className="px-4 py-2 font-medium text-slate-900">{user.name}</td>
+                    <td className="px-4 py-2">{user.email}</td>
+                    <td className="px-4 py-2">{user.role}</td>
+                    <td className="px-4 py-2">
+                      <select className="px-2 py-1 rounded border border-purple-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-purple-400">
+                        <option value="Approved">Approved</option>
+                        <option value="Cancel">Cancel</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Pending">Pending</option>
+                      </select>
+                    </td>
+                    <td className="px-4 py-2 flex gap-2">
+                      <Button size="sm" onClick={() => handleDelete(user.id)} className="text-red-600 px-4 py-1 font-semibold">Delete</Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </Card>
       </div>
     </AdminLayout>

@@ -136,25 +136,25 @@ const Products = () => {
 
         {/* Table faded when modal is open */}
         <div className={showModal ? "opacity-40 pointer-events-none blur-sm" : "opacity-100"}>
-          <div className="bg-white rounded-lg shadow p-6">
-            <table className="w-full">
+          <div className="bg-white rounded-lg shadow p-2 sm:p-4 md:p-6 overflow-x-auto">
+            <table className="w-full min-w-[600px]">
               <thead className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
                 <tr>
-                  <th className="px-6 py-4 text-left">ID</th>
-                  <th className="px-6 py-4 text-left">Name</th>
-                  <th className="px-6 py-4 text-left">Price</th>
-                  <th className="px-6 py-4 text-left">Stock</th>
-                  <th className="px-6 py-4 text-left">Actions</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-4 text-left">ID</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-4 text-left">Name</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-4 text-left">Price</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-4 text-left">Stock</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-4 text-left">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredProducts.map((product) => (
                   <tr key={product.id} className="border-b border-purple-200 hover:bg-purple-50 transition-colors">
-                    <td className="px-6 py-4 font-medium text-purple-900">{product.id}</td>
-                    <td className="px-6 py-4">{product.name}</td>
-                    <td className="px-6 py-4">${product.price}</td>
-                    <td className="px-6 py-4">{product.stock}</td>
-                    <td className="px-6 py-4 flex flex-row gap-3 items-center">
+                    <td className="px-2 sm:px-4 py-2 sm:py-4 font-medium text-purple-900">{product.id}</td>
+                    <td className="px-2 sm:px-4 py-2 sm:py-4">{product.name}</td>
+                    <td className="px-2 sm:px-4 py-2 sm:py-4">${product.price}</td>
+                    <td className="px-2 sm:px-4 py-2 sm:py-4">{product.stock}</td>
+                    <td className="px-2 sm:px-4 py-2 sm:py-4 flex flex-row gap-3 items-center">
                       <button className="text-red-600 font-bold hover:underline" onClick={() => handleDelete(product.id)}>Delete</button>
                       <button className="font-bold hover:underline" style={{ color: '#A259F7' }} onClick={() => handleEdit(product)}>Edit</button>
                     </td>

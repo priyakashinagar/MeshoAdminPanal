@@ -46,7 +46,7 @@ export default function Returns() {
   };
 
   return (
-    <div className="md:p-4">
+    <div className="md:p-4 overflow-x-hidden" style={{maxWidth: '100vw', width: '100vw'}}>
       <h2 className="text-2xl font-bold mb-2">Returns</h2>
       <p className="text-purple-700 mb-6">View and manage product returns.</p>
       <div className="flex items-center mb-6 gap-4">

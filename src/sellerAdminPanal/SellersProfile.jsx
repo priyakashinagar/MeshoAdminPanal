@@ -66,7 +66,7 @@ export default function SellersProfile() {
     <div className=" md:p-4">
       <h2 className="text-2xl font-bold mb-2">Seller Management</h2>
       <p className="text-purple-700 mb-6">Admin can view and manage seller info, products, and earnings.</p>
-      <div className="max-w-xl w-full mx-auto px-2 sm:px-0">
+      <div className="w-full mx-auto px-2 sm:px-0">
         <div className="mb-6">
           <label className="block text-purple-600 font-medium mb-2">Select Seller</label>
           <select
@@ -129,8 +129,8 @@ export default function SellersProfile() {
         {tab === 'products' && (
           <Card className="p-6 border border-purple-100 shadow-lg mb-6">
             <h3 className="text-lg font-semibold text-purple-700 mb-4">Products</h3>
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[400px]">
+            <div className="overflow-x-auto w-full" style={{ WebkitOverflowScrolling: 'touch' }}>
+              <table className="min-w-[350px] sm:min-w-[500px] md:min-w-[700px] w-full text-left max-w-full">
                 <thead className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
                   <tr>
                     <th className="px-2 sm:px-4 py-2 sm:py-4 text-left">ID</th>
@@ -162,8 +162,8 @@ export default function SellersProfile() {
                 <span className="text-2xl font-bold">₹{totalEarnings.toLocaleString()}</span>
               </div>
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[400px]">
+            <div className="overflow-x-auto w-full" style={{ WebkitOverflowScrolling: 'touch' }}>
+              <table className="min-w-[350px] sm:min-w-[500px] md:min-w-[700px] w-full text-left max-w-full">
                 <thead className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
                   <tr>
                     <th className="px-2 sm:px-4 py-2 sm:py-4 text-left">Month</th>

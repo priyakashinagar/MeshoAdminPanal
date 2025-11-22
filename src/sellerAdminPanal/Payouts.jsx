@@ -10,7 +10,7 @@ const totalPayouts = dummyPayouts.reduce((sum, item) => sum + item.amount, 0);
 
 export default function Payouts() {
   return (
-    <div className="p-4 md:p-6">
+    <div className="p-2 sm:p-4 md:p-6 overflow-x-hidden flex flex-col gap-4 items-center w-full" style={{maxWidth: '1200px', margin: '0 auto'}}>
       <h2 className="text-2xl font-bold mb-2">Payouts</h2>
       <p className="text-purple-700 mb-4">Summary of your recent payouts.</p>
       <div className="flex flex-row items-center justify-between mb-6 gap-4 w-full">
@@ -33,28 +33,28 @@ export default function Payouts() {
         </div>
       </div>
       <div className="bg-white rounded-lg shadow p-2 sm:p-4 md:p-6 border border-purple-100 w-full">
-        <div className="overflow-x-auto w-full">
-          <table className="min-w-[700px] w-full text-left max-w-full">
-          <thead className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-            <tr>
-              <th className="px-2 sm:px-4 py-2 sm:py-4 text-left">Payout ID</th>
-              <th className="px-2 sm:px-4 py-2 sm:py-4 text-left">Date</th>
-              <th className="px-2 sm:px-4 py-2 sm:py-4 text-left">Amount (₹)</th>
-              <th className="px-2 sm:px-4 py-2 sm:py-4 text-left">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {dummyPayouts.map((item, idx) => (
-              <tr key={idx} className="border-b border-purple-200 hover:bg-purple-50 transition-colors">
-                <td className="px-2 sm:px-4 py-2 sm:py-4 font-mono text-purple-900">{item.id}</td>
-                <td className="px-2 sm:px-4 py-2 sm:py-4">{item.date}</td>
-                <td className="px-2 sm:px-4 py-2 sm:py-4 font-bold text-purple-700">₹{item.amount.toLocaleString()}</td>
-                <td className="px-2 sm:px-4 py-2 sm:py-4">
-                  <span className={`px-3 py-1 rounded-full text-sm font-normal ${item.status === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{item.status}</span>
-                </td>
+        <div className="overflow-x-auto w-full" style={{ WebkitOverflowScrolling: 'touch' }}>
+          <table className="min-w-[350px] sm:min-w-[500px] md:min-w-[700px] w-full text-left max-w-full">
+            <thead className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+              <tr>
+                <th className="px-2 sm:px-4 py-2 sm:py-4 text-left">Payout ID</th>
+                <th className="px-2 sm:px-4 py-2 sm:py-4 text-left">Date</th>
+                <th className="px-2 sm:px-4 py-2 sm:py-4 text-left">Amount (₹)</th>
+                <th className="px-2 sm:px-4 py-2 sm:py-4 text-left">Status</th>
               </tr>
-            ))}
-          </tbody>
+            </thead>
+            <tbody>
+              {dummyPayouts.map((item, idx) => (
+                <tr key={idx} className="border-b border-purple-200 hover:bg-purple-50 transition-colors">
+                  <td className="px-2 sm:px-4 py-2 sm:py-4 font-mono text-purple-900">{item.id}</td>
+                  <td className="px-2 sm:px-4 py-2 sm:py-4">{item.date}</td>
+                  <td className="px-2 sm:px-4 py-2 sm:py-4 font-bold text-purple-700">₹{item.amount.toLocaleString()}</td>
+                  <td className="px-2 sm:px-4 py-2 sm:py-4">
+                    <span className={`px-3 py-1 rounded-full text-sm font-normal ${item.status === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{item.status}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         </div>
       </div>

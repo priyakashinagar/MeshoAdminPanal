@@ -12,13 +12,13 @@ const sellers = [
 export default function KYC() {
   const incomplete = sellers.filter(s => s.kyc !== 'Completed');
   return (
-    <div className="p-4 md:p-8 bg-gradient-to-br from-purple-50 to-pink-50 min-h-screen">
-      <h2 className="text-3xl font-bold mb-4 text-purple-700">KYC Status - Sellers</h2>
-      <p className="text-purple-500 mb-8 text-lg">Sellers with incomplete or pending KYC. Only admin can view and manage these.</p>
-      <div className="max-w-3xl mx-auto">
-        <Card className="p-8 border border-purple-100 shadow-2xl rounded-2xl bg-white">
-          <div className="overflow-auto max-h-[400px] scrollbar-hide">
-            <table className="w-full min-w-[400px]">
+    <div className="overflow-x-hidden w-full min-h-screen p-3 md:p-8 bg-gradient-to-br from-purple-50 to-pink-50 max-w-full" style={{width: '100vw', maxWidth: '100vw'}}>
+      <h2 className="text-3xl font-bold mb-4 text-purple-700 text-center">KYC Status - Sellers</h2>
+      <p className="text-purple-500 mb-8 text-lg text-center">Sellers with incomplete or pending KYC. Only admin can view and manage these.</p>
+      <div className="w-full">
+        <Card className="p-4 md:p-8 border border-purple-100 shadow-2xl rounded-2xl bg-white">
+          <div className="overflow-x-auto max-h-[400px] scrollbar-hide w-full" style={{ WebkitOverflowScrolling: 'touch' }}>
+            <table className="min-w-[350px] sm:min-w-[500px] md:min-w-[700px] w-full text-left max-w-full">
               <thead className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
                 <tr>
                   <th className="px-4 py-3 text-left">Seller Name</th>

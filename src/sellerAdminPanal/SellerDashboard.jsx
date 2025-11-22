@@ -25,7 +25,7 @@ const recentOrders = [
 
 export default function SellerDashboard() {
   return (
-    <div className="w-full max-w-full mx-auto px-2 sm:px-4 space-y-6 pt-4 md:pt-0 md:pb-8 overflow-x-hidden">
+    <div className="w-full max-w-full mx-auto px-2 sm:px-4 space-y-6 pt-4 md:pt-0 md:pb-8 overflow-x-hidden" style={{maxWidth: '100vw', width: '100vw'}}>
       <div className="bg-white rounded-2xl shadow-lg p-2 sm:p-6 w-full">
         <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-purple-700 text-left">Seller Dashboard</h2>
         <p className="text-purple-500 mb-6 sm:mb-8 text-left text-base sm:text-lg">Overview of your sales, products, and orders.</p>

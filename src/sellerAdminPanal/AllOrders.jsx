@@ -48,7 +48,7 @@ export default function AllOrders() {
   };
 
   return (
-    <div className="md:p-4 mx-auto overflow-x-hidden">
+    <div className="md:p-4 mx-auto overflow-x-hidden w-full" style={{maxWidth: '1200px', margin: '0 auto', width: '100vw', maxWidth: '100vw'}}>
       <h2 className="text-2xl font-bold mb-2">All Orders</h2>
       <p className="text-purple-700 mb-6">View and manage all your orders.</p>
       <div className="flex items-center mb-6 gap-4">
@@ -86,10 +86,10 @@ export default function AllOrders() {
                   <td className="px-2 sm:px-4 py-2 sm:py-4">
                     <span className={`px-3 py-1 rounded-full text-sm font-normal ${order.status === 'Delivered' ? 'bg-green-100 text-green-700' : order.status === 'Shipped' ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700'}`}>{order.status}</span>
                   </td>
-                  <td className="px-2 sm:px-4 py-2 sm:py-4 flex flex-row items-center justify-between">
+                  <td className="px-2 sm:px-4 py-2 sm:py-4 flex flex-col md:flex-row items-center md:justify-between gap-2 md:gap-0">
                     <button className="text-purple-600 font-bold hover:underline" onClick={() => handleDetail(order)}>Detail</button>
-                    <button className="font-bold hover:underline text-purple-600 ml-16 mr-4" onClick={() => handleEdit(order)}>Edit</button>
-                    <button className="text-red-600 font-bold hover:underline" onClick={() => handleDelete(order)}>Delete</button>
+                    <button className="font-bold hover:underline text-purple-600 md:ml-16 md:mr-4" onClick={() => handleEdit(order)}>Edit</button>
+                    <button className="text-red-600 font-bold hover:underline md:ml-auto" onClick={() => handleDelete(order)}>Delete</button>
                   </td>
                 </tr>
               ))}

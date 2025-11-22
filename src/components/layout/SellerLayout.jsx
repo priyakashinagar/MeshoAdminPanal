@@ -186,7 +186,7 @@ const SellerLayout = ({ children }) => {
             </div>
           </div>
         </div>
-        <div className="p-2 md:p-8">{children}</div>
+        <div >{children}</div>
       </main>
     </div>
   );

@@ -32,22 +32,26 @@ export default function Earnings() {
           <span className="text-2xl font-bold">₹{totalEarnings.toLocaleString()}</span>
         </div>
       </div>
-      <table className="w-full bg-white rounded-lg shadow">
-        <thead className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-          <tr>
-            <th className="px-4 py-3 text-left">Month</th>
-            <th className="px-4 py-3 text-left">Amount (₹)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {dummyEarnings.map((item, idx) => (
-            <tr key={idx} className="border-b">
-              <td className="px-4 py-3">{item.month}</td>
-              <td className="px-4 py-3 font-bold text-purple-700">₹{item.amount.toLocaleString()}</td>
+      <div className="bg-white rounded-lg shadow p-2 sm:p-4 md:p-6 border border-purple-100 w-full">
+        <div className="overflow-x-auto w-full">
+          <table className="min-w-[700px] w-full text-left max-w-full">
+          <thead className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+            <tr>
+              <th className="px-2 sm:px-4 py-2 sm:py-4 text-left">Month</th>
+              <th className="px-2 sm:px-4 py-2 sm:py-4 text-left">Amount (₹)</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {dummyEarnings.map((item, idx) => (
+              <tr key={idx} className="border-b border-purple-200 hover:bg-purple-50 transition-colors">
+                <td className="px-2 sm:px-4 py-2 sm:py-4">{item.month}</td>
+                <td className="px-2 sm:px-4 py-2 sm:py-4 font-bold text-purple-700">₹{item.amount.toLocaleString()}</td>
+              </tr>
+            ))}
+          </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

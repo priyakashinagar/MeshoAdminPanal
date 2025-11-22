@@ -4,14 +4,17 @@ import Card from '../components/common/Card';
 import Button from '../components/common/Button';
 
 const initialUsers = [
-  { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin' },
-  { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'Manager' },
+  { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Seller', store: 'John Fashion', phone: '9876543210', address: 'Delhi, India', kyc: 'Completed' },
+  { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'Seller', store: 'Jane Boutique', phone: '9123456780', address: 'Mumbai, India', kyc: 'Pending' },
+  { id: 3, name: 'Amit Kumar', email: 'amit@example.com', role: 'Admin' },
 ];
+
 
 const Users = () => {
   const [users, setUsers] = useState(initialUsers);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', role: '' });
+  const [profile, setProfile] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,6 +31,12 @@ const Users = () => {
   const handleDelete = (id) => {
     setUsers(users.filter(u => u.id !== id));
   };
+
+  const handleViewProfile = (user) => {
+    setProfile(user);
+  };
+
+  const closeProfile = () => setProfile(null);
 
   return (
     <AdminLayout>
@@ -52,6 +61,7 @@ const Users = () => {
                 <select name="role" value={formData.role} onChange={handleChange} className="w-full px-4 py-2 border rounded" required>
                   <option value="">Select role</option>
                   <option value="Admin">Admin</option>
+                  <option value="Seller">Seller</option>
                   <option value="Manager">Manager</option>
                   <option value="Staff">Staff</option>
                 </select>
@@ -82,14 +92,16 @@ const Users = () => {
                     <td className="px-4 py-2">{user.email}</td>
                     <td className="px-4 py-2">{user.role}</td>
                     <td className="px-4 py-2">
-                      <select className="px-2 py-1 rounded border border-purple-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-purple-400">
-                        <option value="Approved">Approved</option>
-                        <option value="Cancel">Cancel</option>
-                        <option value="Completed">Completed</option>
-                        <option value="Pending">Pending</option>
-                      </select>
+                      {user.role === 'Seller' ? (
+                        <span className={`px-3 py-1 rounded-full text-sm font-normal ${user.kyc === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{user.kyc || 'Pending'}</span>
+                      ) : (
+                        <span className="px-3 py-1 rounded-full text-sm font-normal bg-purple-100 text-purple-700">N/A</span>
+                      )}
                     </td>
                     <td className="px-4 py-2 flex gap-2">
+                      {user.role === 'Seller' && (
+                        <Button size="sm" onClick={() => handleViewProfile(user)} className="bg-purple-100 text-purple-700 px-4 py-1 font-semibold">View Profile</Button>
+                      )}
                       <Button size="sm" onClick={() => handleDelete(user.id)} className="text-red-600 px-4 py-1 font-semibold">Delete</Button>
                     </td>
                   </tr>
@@ -98,6 +110,24 @@ const Users = () => {
             </table>
           </div>
         </Card>
+
+        {/* Seller Profile Modal */}
+        {profile && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+            <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md relative">
+              <button onClick={closeProfile} className="absolute top-3 right-3 text-xl text-purple-600 font-bold">&times;</button>
+              <h2 className="text-2xl font-bold mb-4 text-purple-700">Seller Profile</h2>
+              <div className="space-y-3">
+                <div><span className="font-semibold">Name:</span> {profile.name}</div>
+                <div><span className="font-semibold">Email:</span> {profile.email}</div>
+                <div><span className="font-semibold">Store:</span> {profile.store || '-'}</div>
+                <div><span className="font-semibold">Phone:</span> {profile.phone || '-'}</div>
+                <div><span className="font-semibold">Address:</span> {profile.address || '-'}</div>
+                <div><span className="font-semibold">KYC Status:</span> <span className={`px-3 py-1 rounded-full text-sm font-normal ${profile.kyc === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{profile.kyc || 'Pending'}</span></div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </AdminLayout>
   );

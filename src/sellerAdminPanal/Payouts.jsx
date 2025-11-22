@@ -32,28 +32,32 @@ export default function Payouts() {
           <span className="text-2xl font-bold">₹{totalPayouts.toLocaleString()}</span>
         </div>
       </div>
-      <table className="w-full bg-white rounded-lg shadow">
-        <thead className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-          <tr>
-            <th className="px-4 py-3 text-left">Payout ID</th>
-            <th className="px-4 py-3 text-left">Date</th>
-            <th className="px-4 py-3 text-left">Amount (₹)</th>
-            <th className="px-4 py-3 text-left">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {dummyPayouts.map((item, idx) => (
-            <tr key={idx} className="border-b">
-              <td className="px-4 py-3 font-mono">{item.id}</td>
-              <td className="px-4 py-3">{item.date}</td>
-              <td className="px-4 py-3 font-bold text-purple-700">₹{item.amount.toLocaleString()}</td>
-              <td className="px-4 py-3">
-                <span className={`px-3 py-1 rounded-full text-sm font-normal ${item.status === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{item.status}</span>
-              </td>
+      <div className="bg-white rounded-lg shadow p-2 sm:p-4 md:p-6 border border-purple-100 w-full">
+        <div className="overflow-x-auto w-full">
+          <table className="min-w-[700px] w-full text-left max-w-full">
+          <thead className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+            <tr>
+              <th className="px-2 sm:px-4 py-2 sm:py-4 text-left">Payout ID</th>
+              <th className="px-2 sm:px-4 py-2 sm:py-4 text-left">Date</th>
+              <th className="px-2 sm:px-4 py-2 sm:py-4 text-left">Amount (₹)</th>
+              <th className="px-2 sm:px-4 py-2 sm:py-4 text-left">Status</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {dummyPayouts.map((item, idx) => (
+              <tr key={idx} className="border-b border-purple-200 hover:bg-purple-50 transition-colors">
+                <td className="px-2 sm:px-4 py-2 sm:py-4 font-mono text-purple-900">{item.id}</td>
+                <td className="px-2 sm:px-4 py-2 sm:py-4">{item.date}</td>
+                <td className="px-2 sm:px-4 py-2 sm:py-4 font-bold text-purple-700">₹{item.amount.toLocaleString()}</td>
+                <td className="px-2 sm:px-4 py-2 sm:py-4">
+                  <span className={`px-3 py-1 rounded-full text-sm font-normal ${item.status === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{item.status}</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

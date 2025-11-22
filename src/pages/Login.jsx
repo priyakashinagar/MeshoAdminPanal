@@ -45,16 +45,16 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white to-purple-50 dark:from-slate-950 dark:to-purple-950 px-4">
-      <Card className="w-full max-w-md p-8 shadow-lg">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white to-purple-50 dark:from-slate-950 dark:to-purple-950 px-2 sm:px-4">
+      <Card className="w-full max-w-sm sm:max-w-md p-4 sm:p-8 shadow-lg">
         <div className="flex justify-center mb-8">
           <div className="bg-gradient-to-br from-purple-600 to-pink-600 text-white p-3 rounded-lg">
             <LogIn size={28} />
           </div>
         </div>
 
-        <h1 className="text-3xl font-bold text-center mb-2">meesho Admin</h1>
-        <p className="text-center text-gray-600 dark:text-gray-400 mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-center mb-2">meesho Admin</h1>
+        <p className="text-center text-gray-600 dark:text-gray-400 mb-6 sm:mb-8">
           E-commerce Dashboard
         </p>
 

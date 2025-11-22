@@ -103,7 +103,7 @@ const AdminLayout = ({ children }) => {
   }, []);
 
   return (
-    <div className="min-h-screen flex bg-purple-10 dark:bg-slate-50" style={{ zoom: 0.92 }}>
+    <div className="min-h-screen flex bg-purple-10 dark:bg-slate-50 overflow-x-hidden">
       {/* Burger icon for mobile */}
       <button
         className="md:hidden fixed top-4 left-4 z-[101] bg-white rounded-full p-2 shadow-lg border border-purple-200"
@@ -212,7 +212,7 @@ const AdminLayout = ({ children }) => {
             </div>
           </div>
         </div>
-        <div className="p-2 md:p-8">{children}</div>
+        <div >{children}</div>
       </main>
     </div>
   );

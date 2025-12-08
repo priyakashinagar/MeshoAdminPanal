@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from '../pages/Login';
 import AdminLogin from '../pages/AdminLogin';
 import SellerOnboarding from '../pages/SellerOnboarding';
@@ -8,6 +8,7 @@ import SellerRoutes from '../sellerAdminPanal/SellerRoutes';
 import Products from '../pages/Products';
 import AdminEarnings from '../pages/Earnings';
 import AdminLayout from '../components/layout/AdminLayout';
+import Payouts from '../sellerAdminPanal/Payouts';
 import Orders from '../pages/Orders';
 import Users from '../pages/Users';
 import Categories from '../pages/Categories';

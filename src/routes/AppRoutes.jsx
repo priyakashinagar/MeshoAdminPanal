@@ -8,7 +8,6 @@ import SellerRoutes from '../sellerAdminPanal/SellerRoutes';
 import Products from '../pages/Products';
 import AdminEarnings from '../pages/Earnings';
 import AdminLayout from '../components/layout/AdminLayout';
-import Payouts from '../sellerAdminPanal/Payouts';
 import Orders from '../pages/Orders';
 import Users from '../pages/Users';
 import Categories from '../pages/Categories';

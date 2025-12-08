@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
+  // Use relative asset paths so the built app works when served from a subpath
+  base: './',
   plugins: [
     react(),
     tailwindcss(),

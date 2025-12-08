@@ -91,37 +91,37 @@ const Payments = () => {
     <AdminLayout>
       <div className="space-y-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-purple-900 dark:text-purple-50">Payments</h1>
-          <p className="text-purple-600 dark:text-purple-300 mt-2">Total Transactions: {pagination.total}</p>
+          <h1 className="text-3xl font-bold text-purple-900">Payments</h1>
+          <p className="text-purple-600 mt-2">Total Transactions: {pagination.total}</p>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-          <div className="bg-white dark:bg-slate-800 rounded-xl p-4 shadow">
-            <p className="text-sm text-purple-600 dark:text-purple-300">Total Amount</p>
-            <p className="text-xl font-bold text-purple-900 dark:text-purple-50 flex items-center">
+          <div className="bg-white rounded-xl p-4 shadow">
+            <p className="text-sm text-purple-600">Total Amount</p>
+            <p className="text-xl font-bold text-purple-900 flex items-center">
               <IndianRupee size={18} />{stats.total?.toLocaleString() || 0}
             </p>
           </div>
-          <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 shadow">
+          <div className="bg-green-50 rounded-xl p-4 shadow">
             <p className="text-sm text-green-600">Completed</p>
             <p className="text-xl font-bold text-green-700 flex items-center">
               <IndianRupee size={18} />{stats.completed?.toLocaleString() || 0}
             </p>
           </div>
-          <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-xl p-4 shadow">
+          <div className="bg-yellow-50 rounded-xl p-4 shadow">
             <p className="text-sm text-yellow-600">Pending</p>
             <p className="text-xl font-bold text-yellow-700 flex items-center">
               <IndianRupee size={18} />{stats.pending?.toLocaleString() || 0}
             </p>
           </div>
-          <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-4 shadow">
+          <div className="bg-red-50 rounded-xl p-4 shadow">
             <p className="text-sm text-red-600">Failed</p>
             <p className="text-xl font-bold text-red-700 flex items-center">
               <IndianRupee size={18} />{stats.failed?.toLocaleString() || 0}
             </p>
           </div>
-          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 shadow">
+          <div className="bg-blue-50 rounded-xl p-4 shadow">
             <p className="text-sm text-blue-600">Refunded</p>
             <p className="text-xl font-bold text-blue-700 flex items-center">
               <IndianRupee size={18} />{stats.refunded?.toLocaleString() || 0}
@@ -131,20 +131,20 @@ const Payments = () => {
 
         {/* Filters */}
         <div className="flex items-center gap-4 mb-4 flex-wrap">
-          <div className="flex items-center gap-2 bg-purple-100 dark:bg-purple-900 rounded-full px-5 py-2 shadow focus-within:ring-2 focus-within:ring-pink-400 w-80">
-            <Search size={22} className="text-purple-600 dark:text-purple-300" />
+          <div className="flex items-center gap-2 bg-purple-100 rounded-full px-5 py-2 shadow focus-within:ring-2 focus-within:ring-pink-400 w-80">
+            <Search size={22} className="text-purple-600" />
             <input
               type="text"
               placeholder="Search by order ID or customer..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="border-0 bg-transparent text-purple-900 dark:text-purple-50 outline-none w-full text-base placeholder-purple-400"
+              className="border-0 bg-transparent text-purple-900 outline-none w-full text-base placeholder-purple-400"
             />
           </div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 rounded-xl border border-purple-200 bg-white dark:bg-slate-800 text-purple-900 dark:text-purple-50"
+            className="px-4 py-2 rounded-xl border border-purple-200 bg-white text-purple-900"
           >
             <option value="">All Status</option>
             <option value="completed">Completed</option>
@@ -156,7 +156,7 @@ const Payments = () => {
         </div>
 
         {/* Payments Table */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow overflow-hidden">
+        <div className="bg-white rounded-lg shadow overflow-hidden">
           <table className="w-full">
             <thead className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
               <tr>
@@ -177,21 +177,21 @@ const Payments = () => {
                 </tr>
               ) : (
                 payments.map((payment) => (
-                  <tr key={payment._id} className="border-b border-purple-200 dark:border-purple-700 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors">
-                    <td className="px-6 py-4 font-medium text-purple-900 dark:text-purple-50">
+                  <tr key={payment._id} className="border-b border-purple-200 hover:bg-purple-50 transition-colors">
+                    <td className="px-6 py-4 font-medium text-purple-900">
                       #{payment.orderId?.slice(-8).toUpperCase() || 'N/A'}
                     </td>
-                    <td className="px-6 py-4 text-purple-900 dark:text-purple-50">
+                    <td className="px-6 py-4 text-purple-900">
                       <div>
                         <p className="font-medium">{payment.customerName || 'N/A'}</p>
                         <p className="text-xs text-purple-500">{payment.customerEmail || ''}</p>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-purple-900 dark:text-purple-50 flex items-center gap-2">
+                    <td className="px-6 py-4 text-purple-900 flex items-center gap-2">
                       <CreditCard size={16} className="text-pink-500" />
                       {payment.method || 'COD'}
                     </td>
-                    <td className="px-6 py-4 text-purple-900 dark:text-purple-50 font-semibold">
+                    <td className="px-6 py-4 text-purple-900 font-semibold">
                       <span className="flex items-center">
                         <IndianRupee size={14} />{payment.amount?.toLocaleString() || 0}
                       </span>
@@ -202,7 +202,7 @@ const Payments = () => {
                         {payment.status?.charAt(0).toUpperCase() + payment.status?.slice(1) || 'N/A'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-purple-900 dark:text-purple-50">
+                    <td className="px-6 py-4 text-purple-900">
                       {payment.date ? new Date(payment.date).toLocaleDateString() : 'N/A'}
                     </td>
                   </tr>

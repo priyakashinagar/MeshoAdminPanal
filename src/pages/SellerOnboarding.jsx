@@ -304,7 +304,9 @@ export default function SellerOnboarding() {
       }
     } catch (err) {
       console.error('❌ Registration error:', err);
-      setError(err.message || err || 'Registration failed. Please try again.');
+      // Handle backend error response (including duplicate shopName)
+      const errorMsg = err.response?.data?.message || err.message || err || 'Registration failed. Please try again.';
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }

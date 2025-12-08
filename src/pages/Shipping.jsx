@@ -126,34 +126,34 @@ const Shipping = () => {
     <AdminLayout>
       <div className="space-y-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-purple-900 dark:text-purple-50">Shipping Management</h1>
-          <p className="text-purple-600 dark:text-purple-300 mt-2">Total Shipments: {pagination.total}</p>
+          <h1 className="text-3xl font-bold text-purple-900">Shipping Management</h1>
+          <p className="text-purple-600 mt-2">Total Shipments: {pagination.total}</p>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 shadow">
+          <div className="bg-gray-50 rounded-xl p-4 shadow">
             <div className="flex items-center gap-2">
               <Clock size={20} className="text-gray-500" />
               <p className="text-sm text-gray-600">Pending</p>
             </div>
             <p className="text-2xl font-bold text-gray-700 mt-2">{stats.pending || 0}</p>
           </div>
-          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 shadow">
+          <div className="bg-blue-50 rounded-xl p-4 shadow">
             <div className="flex items-center gap-2">
               <Package size={20} className="text-blue-500" />
               <p className="text-sm text-blue-600">Shipped</p>
             </div>
             <p className="text-2xl font-bold text-blue-700 mt-2">{stats.shipped || 0}</p>
           </div>
-          <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-xl p-4 shadow">
+          <div className="bg-yellow-50 rounded-xl p-4 shadow">
             <div className="flex items-center gap-2">
               <Truck size={20} className="text-yellow-500" />
               <p className="text-sm text-yellow-600">In Transit</p>
             </div>
             <p className="text-2xl font-bold text-yellow-700 mt-2">{stats.inTransit || 0}</p>
           </div>
-          <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 shadow">
+          <div className="bg-green-50 rounded-xl p-4 shadow">
             <div className="flex items-center gap-2">
               <CheckCircle size={20} className="text-green-500" />
               <p className="text-sm text-green-600">Delivered</p>
@@ -164,20 +164,20 @@ const Shipping = () => {
 
         {/* Filters */}
         <div className="flex items-center gap-4 mb-4 flex-wrap">
-          <div className="flex items-center gap-2 bg-purple-100 dark:bg-purple-900 rounded-full px-5 py-2 shadow focus-within:ring-2 focus-within:ring-pink-400 w-80">
-            <svg xmlns="http://www.w3.org/2000/svg" className="text-purple-600 dark:text-purple-300" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" /></svg>
+          <div className="flex items-center gap-2 bg-purple-100 rounded-full px-5 py-2 shadow focus-within:ring-2 focus-within:ring-pink-400 w-80">
+            <svg xmlns="http://www.w3.org/2000/svg" className="text-purple-600" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" /></svg>
             <input
               type="text"
               placeholder="Search by order ID or tracking..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="border-0 bg-transparent text-purple-900 dark:text-purple-50 outline-none w-full text-base placeholder-purple-400"
+              className="border-0 bg-transparent text-purple-900 outline-none w-full text-base placeholder-purple-400"
             />
           </div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 rounded-xl border border-purple-200 bg-white dark:bg-slate-800 text-purple-900 dark:text-purple-50"
+            className="px-4 py-2 rounded-xl border border-purple-200 bg-white text-purple-900"
           >
             <option value="">All Status</option>
             <option value="pending">Pending</option>
@@ -249,7 +249,7 @@ const Shipping = () => {
         )}
 
         {/* Shipments Table */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow overflow-hidden">
+        <div className="bg-white rounded-lg shadow overflow-hidden">
           <table className="w-full">
             <thead className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
               <tr>
@@ -272,23 +272,23 @@ const Shipping = () => {
                 </tr>
               ) : (
                 shipments.map((shipment) => (
-                  <tr key={shipment._id} className="border-b border-purple-200 dark:border-purple-700 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors">
-                    <td className="px-6 py-4 font-medium text-purple-900 dark:text-purple-50">
+                  <tr key={shipment._id} className="border-b border-purple-200 hover:bg-purple-50 transition-colors">
+                    <td className="px-6 py-4 font-medium text-purple-900">
                       #{shipment.orderId?.slice(-8).toUpperCase() || 'N/A'}
                     </td>
-                    <td className="px-6 py-4 text-purple-900 dark:text-purple-50">
+                    <td className="px-6 py-4 text-purple-900">
                       {shipment.customerName || 'N/A'}
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-1 text-sm text-purple-700 dark:text-purple-300">
+                      <div className="flex items-center gap-1 text-sm text-purple-700">
                         <MapPin size={14} />
                         {shipment.destination || 'N/A'}
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-purple-900 dark:text-purple-50">
+                    <td className="px-6 py-4 text-purple-900">
                       {shipment.carrier || 'N/A'}
                     </td>
-                    <td className="px-6 py-4 text-purple-900 dark:text-purple-50 text-sm">
+                    <td className="px-6 py-4 text-purple-900 text-sm">
                       {shipment.trackingNumber || 'Not assigned'}
                     </td>
                     <td className="px-6 py-4">
@@ -297,7 +297,7 @@ const Shipping = () => {
                         {shipment.status?.replace('_', ' ').charAt(0).toUpperCase() + shipment.status?.replace('_', ' ').slice(1) || 'N/A'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-purple-900 dark:text-purple-50 text-sm">
+                    <td className="px-6 py-4 text-purple-900 text-sm">
                       {shipment.date ? new Date(shipment.date).toLocaleDateString() : 'N/A'}
                     </td>
                     <td className="px-6 py-4">

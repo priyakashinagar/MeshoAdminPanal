@@ -74,20 +74,20 @@ const Customers = () => {
     <AdminLayout>
       <div className="space-y-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-purple-900 dark:text-purple-50">Customers Management</h1>
-          <p className="text-purple-600 dark:text-purple-300 mt-2">Total Customers: {pagination.total}</p>
+          <h1 className="text-3xl font-bold text-purple-900">Customers Management</h1>
+          <p className="text-purple-600 mt-2">Total Customers: {pagination.total}</p>
         </div>
 
         {/* Search Bar */}
         <div className="flex items-center mb-2">
-          <div className="flex items-center gap-2 bg-purple-100 dark:bg-purple-900 rounded-full px-5 py-2 shadow focus-within:ring-2 focus-within:ring-pink-400 w-96">
-            <svg xmlns="http://www.w3.org/2000/svg" className="text-purple-600 dark:text-purple-300" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" /></svg>
+          <div className="flex items-center gap-2 bg-purple-100 rounded-full px-5 py-2 shadow focus-within:ring-2 focus-within:ring-pink-400 w-96">
+            <svg xmlns="http://www.w3.org/2000/svg" className="text-purple-600" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" /></svg>
             <input
               type="text"
               placeholder="Search customers by name or email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="border-0 bg-transparent text-purple-900 dark:text-purple-50 outline-none w-full text-lg placeholder-purple-400"
+              className="border-0 bg-transparent text-purple-900 outline-none w-full text-lg placeholder-purple-400"
             />
           </div>
           {loading && <Loader2 className="w-5 h-5 animate-spin text-purple-600 ml-4" />}
@@ -95,15 +95,15 @@ const Customers = () => {
 
         {customers.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-purple-600 dark:text-purple-300 text-lg">No customers found</p>
+            <p className="text-purple-600 text-lg">No customers found</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {customers.map((customer) => (
-              <Card key={customer._id} className="p-6 border-0 shadow-lg hover:shadow-xl transition-all bg-white dark:bg-slate-900">
+              <Card key={customer._id} className="p-6 border-0 shadow-lg hover:shadow-xl transition-all bg-white">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="text-lg font-bold text-purple-900 dark:text-purple-50">{customer.name}</h3>
+                    <h3 className="text-lg font-bold text-purple-900">{customer.name}</h3>
                     <span className={`text-xs px-2 py-1 rounded-full ${customer.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                       {customer.isActive ? 'Active' : 'Inactive'}
                     </span>
@@ -117,34 +117,34 @@ const Customers = () => {
                 </div>
 
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm text-purple-600 dark:text-purple-300">
-                    <Mail size={16} className="text-pink-600 dark:text-pink-400" />
-                    <a href={`mailto:${customer.email}`} className="hover:text-pink-600 dark:hover:text-pink-400">{customer.email}</a>
+                  <div className="flex items-center gap-2 text-sm text-purple-600">
+                    <Mail size={16} className="text-pink-600" />
+                    <a href={`mailto:${customer.email}`} className="hover:text-pink-600">{customer.email}</a>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-purple-600 dark:text-purple-300">
-                    <Phone size={16} className="text-pink-600 dark:text-pink-400" />
+                  <div className="flex items-center gap-2 text-sm text-purple-600">
+                    <Phone size={16} className="text-pink-600" />
                     <span>{customer.phone || 'N/A'}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-purple-600 dark:text-purple-300">
-                    <MapPin size={16} className="text-pink-600 dark:text-pink-400" />
+                  <div className="flex items-center gap-2 text-sm text-purple-600">
+                    <MapPin size={16} className="text-pink-600" />
                     <span>{customer.address?.city || 'N/A'}, {customer.address?.state || ''}</span>
                   </div>
                 </div>
 
-                <div className="mt-4 pt-4 border-t border-purple-200 dark:border-purple-800 grid grid-cols-3 gap-2">
+                <div className="mt-4 pt-4 border-t border-purple-200 grid grid-cols-3 gap-2">
                   <div>
-                    <p className="text-xs text-purple-600 dark:text-purple-300">Orders</p>
-                    <p className="text-lg font-bold text-pink-600 dark:text-pink-400">{customer.totalOrders || 0}</p>
+                    <p className="text-xs text-purple-600">Orders</p>
+                    <p className="text-lg font-bold text-pink-600">{customer.totalOrders || 0}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-purple-600 dark:text-purple-300">Total Spent</p>
-                    <p className="text-sm font-bold text-purple-900 dark:text-purple-50 flex items-center">
+                    <p className="text-xs text-purple-600">Total Spent</p>
+                    <p className="text-sm font-bold text-purple-900 flex items-center">
                       <IndianRupee size={12} />{(customer.totalSpent || 0).toLocaleString()}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-purple-600 dark:text-purple-300">Joined</p>
-                    <p className="text-xs font-medium text-purple-900 dark:text-purple-50">
+                    <p className="text-xs text-purple-600">Joined</p>
+                    <p className="text-xs font-medium text-purple-900">
                       {new Date(customer.createdAt).toLocaleDateString()}
                     </p>
                   </div>

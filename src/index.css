@@ -30,7 +30,7 @@ html, body {
 
 @layer base {
   body {
-    @apply bg-purple-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 max-w-full;
+    @apply bg-purple-50 text-slate-900 max-w-full;
     overflow-x: hidden;
   }
   .black-theme body {

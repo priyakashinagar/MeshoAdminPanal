@@ -128,7 +128,7 @@ const AdminLayout = ({ children }) => {
   }, []);
 
   return (
-    <div className="min-h-screen flex bg-purple-10 dark:bg-slate-50 overflow-x-hidden">
+    <div className="min-h-screen flex bg-purple-10 overflow-x-hidden">
       {/* Burger icon for mobile */}
       <button
         className="md:hidden fixed top-4 left-4 z-[101] bg-white rounded-full p-2 shadow-lg border border-purple-200"
@@ -207,25 +207,25 @@ const AdminLayout = ({ children }) => {
 
       {/* Main Content - responsive margin */}
       <main className="flex-1 md:ml-64 transition-all">
-        <div className="border-b border-purple-200 dark:border-purple-900 bg-white dark:bg-slate-900 sticky top-0 z-40 shadow-sm">
+        <div className="border-b border-purple-200 bg-white sticky top-0 z-40 shadow-sm">
           <div className="px-4 md:px-8 py-1 flex flex-col md:flex-row justify-between items-center gap-2 md:gap-0">
-            <h2 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent w-full md:w-auto text-center md:text-left">
+            <h2 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent w-full md:w-auto text-center md:text-left">
               {location.pathname === '/' ? 'Dashboard' : location.pathname.split('/')[1]?.toUpperCase()}
             </h2>
             <div className="flex items-center gap-4">
               <div className="relative">
-                <button onClick={() => setProfileOpen(!profileOpen)} className="flex items-center gap-2 px-3 py-2 hover:bg-purple-100 dark:hover:bg-purple-900/30 rounded-lg transition-colors">
+                <button onClick={() => setProfileOpen(!profileOpen)} className="flex items-center gap-2 px-3 py-2 hover:bg-purple-100 rounded-lg transition-colors">
                   <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-pink-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
                     {userEmail[0].toUpperCase()}
                   </div>
                 </button>
                 {profileOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-800 rounded-lg shadow-lg z-50">
-                    <div className="px-4 py-3 border-b border-purple-200 dark:border-purple-800">
+                  <div className="absolute right-0 mt-2 w-48 bg-white border border-purple-200 rounded-lg shadow-lg z-50">
+                    <div className="px-4 py-3 border-b border-purple-200">
                       <p className="text-sm font-medium">{userEmail}</p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">Admin</p>
+                      <p className="text-xs text-gray-600">Admin</p>
                     </div>
-                    <button onClick={handleLogout} className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                    <button onClick={handleLogout} className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 transition-colors">
                       Logout
                     </button>
                   </div>

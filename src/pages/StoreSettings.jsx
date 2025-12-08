@@ -83,8 +83,8 @@ const StoreSettings = () => {
     <AdminLayout>
       <div className="space-y-8 max-w-4xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-purple-900 dark:text-purple-50">Store Settings</h1>
-          <p className="text-purple-600 dark:text-purple-300 mt-2">Configure your store preferences</p>
+          <h1 className="text-3xl font-bold text-purple-900">Store Settings</h1>
+          <p className="text-purple-600 mt-2">Configure your store preferences</p>
         </div>
 
         {error && (
@@ -103,26 +103,26 @@ const StoreSettings = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* General Settings */}
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6">
+          <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex items-center gap-3 mb-6">
               <Store className="text-purple-600" size={24} />
-              <h2 className="text-xl font-bold text-purple-900 dark:text-purple-50">General Settings</h2>
+              <h2 className="text-xl font-bold text-purple-900">General Settings</h2>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-purple-700 dark:text-purple-300 mb-2">Store Name</label>
+                <label className="block text-sm font-medium text-purple-700 mb-2">Store Name</label>
                 <input
                   type="text"
                   name="storeName"
                   value={settings.storeName}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 bg-purple-50 dark:bg-slate-700 dark:text-white"
+                  className="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 bg-purple-50"
                   placeholder="My Meesho Store"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-purple-700 dark:text-purple-300 mb-2">Store Email</label>
+                <label className="block text-sm font-medium text-purple-700 mb-2">Store Email</label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400" size={18} />
                   <input
@@ -130,30 +130,30 @@ const StoreSettings = () => {
                     name="storeEmail"
                     value={settings.storeEmail}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 bg-purple-50 dark:bg-slate-700 dark:text-white"
+                    className="w-full pl-10 pr-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 bg-purple-50"
                     placeholder="support@store.com"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-purple-700 dark:text-purple-300 mb-2">Store Phone</label>
+                <label className="block text-sm font-medium text-purple-700 mb-2">Store Phone</label>
                 <input
                   type="text"
                   name="storePhone"
                   value={settings.storePhone}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 bg-purple-50 dark:bg-slate-700 dark:text-white"
+                  className="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 bg-purple-50"
                   placeholder="+91 9876543210"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-purple-700 dark:text-purple-300 mb-2">Order Prefix</label>
+                <label className="block text-sm font-medium text-purple-700 mb-2">Order Prefix</label>
                 <input
                   type="text"
                   name="orderPrefix"
                   value={settings.orderPrefix}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 bg-purple-50 dark:bg-slate-700 dark:text-white"
+                  className="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 bg-purple-50"
                   placeholder="ORD"
                 />
               </div>
@@ -161,20 +161,20 @@ const StoreSettings = () => {
           </div>
 
           {/* Regional Settings */}
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6">
+          <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex items-center gap-3 mb-6">
               <Globe className="text-purple-600" size={24} />
-              <h2 className="text-xl font-bold text-purple-900 dark:text-purple-50">Regional Settings</h2>
+              <h2 className="text-xl font-bold text-purple-900">Regional Settings</h2>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-purple-700 dark:text-purple-300 mb-2">Currency</label>
+                <label className="block text-sm font-medium text-purple-700 mb-2">Currency</label>
                 <select
                   name="currency"
                   value={settings.currency}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 bg-purple-50 dark:bg-slate-700 dark:text-white"
+                  className="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 bg-purple-50"
                 >
                   <option value="INR">INR (₹)</option>
                   <option value="USD">USD ($)</option>
@@ -182,14 +182,14 @@ const StoreSettings = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-purple-700 dark:text-purple-300 mb-2">Timezone</label>
+                <label className="block text-sm font-medium text-purple-700 mb-2">Timezone</label>
                 <div className="relative">
                   <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400" size={18} />
                   <select
                     name="timezone"
                     value={settings.timezone}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 bg-purple-50 dark:bg-slate-700 dark:text-white"
+                    className="w-full pl-10 pr-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 bg-purple-50"
                   >
                     <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
                     <option value="UTC">UTC</option>
@@ -201,27 +201,27 @@ const StoreSettings = () => {
           </div>
 
           {/* Payment & Shipping Settings */}
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6">
+          <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex items-center gap-3 mb-6">
               <CreditCard className="text-purple-600" size={24} />
-              <h2 className="text-xl font-bold text-purple-900 dark:text-purple-50">Payment & Shipping</h2>
+              <h2 className="text-xl font-bold text-purple-900">Payment & Shipping</h2>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label className="block text-sm font-medium text-purple-700 dark:text-purple-300 mb-2">Tax Rate (%)</label>
+                <label className="block text-sm font-medium text-purple-700 mb-2">Tax Rate (%)</label>
                 <input
                   type="number"
                   name="taxRate"
                   value={settings.taxRate}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 bg-purple-50 dark:bg-slate-700 dark:text-white"
+                  className="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 bg-purple-50"
                   min="0"
                   max="100"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-purple-700 dark:text-purple-300 mb-2">Shipping Fee (₹)</label>
+                <label className="block text-sm font-medium text-purple-700 mb-2">Shipping Fee (₹)</label>
                 <div className="relative">
                   <Truck className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400" size={18} />
                   <input
@@ -229,19 +229,19 @@ const StoreSettings = () => {
                     name="shippingFee"
                     value={settings.shippingFee}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 bg-purple-50 dark:bg-slate-700 dark:text-white"
+                    className="w-full pl-10 pr-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 bg-purple-50"
                     min="0"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-purple-700 dark:text-purple-300 mb-2">Free Shipping Above (₹)</label>
+                <label className="block text-sm font-medium text-purple-700 mb-2">Free Shipping Above (₹)</label>
                 <input
                   type="number"
                   name="freeShippingThreshold"
                   value={settings.freeShippingThreshold}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 bg-purple-50 dark:bg-slate-700 dark:text-white"
+                  className="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 bg-purple-50"
                   min="0"
                 />
               </div>
@@ -249,10 +249,10 @@ const StoreSettings = () => {
           </div>
 
           {/* Notification Settings */}
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6">
+          <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex items-center gap-3 mb-6">
               <Bell className="text-purple-600" size={24} />
-              <h2 className="text-xl font-bold text-purple-900 dark:text-purple-50">Other Settings</h2>
+              <h2 className="text-xl font-bold text-purple-900">Other Settings</h2>
             </div>
             
             <div className="space-y-4">
@@ -264,7 +264,7 @@ const StoreSettings = () => {
                   onChange={handleChange}
                   className="w-5 h-5 text-purple-600 border-purple-300 rounded focus:ring-purple-400"
                 />
-                <span className="text-purple-900 dark:text-purple-50">Enable Email Notifications</span>
+                <span className="text-purple-900">Enable Email Notifications</span>
               </label>
               <label className="flex items-center gap-3 cursor-pointer">
                 <input
@@ -274,7 +274,7 @@ const StoreSettings = () => {
                   onChange={handleChange}
                   className="w-5 h-5 text-purple-600 border-purple-300 rounded focus:ring-purple-400"
                 />
-                <span className="text-purple-900 dark:text-purple-50">Maintenance Mode</span>
+                <span className="text-purple-900">Maintenance Mode</span>
                 <span className="text-sm text-purple-500">(Disables customer access)</span>
               </label>
             </div>

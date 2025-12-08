@@ -66,14 +66,14 @@ const SalesReports = () => {
       <div className="space-y-8">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-3xl font-bold text-purple-900 dark:text-purple-50">Sales Reports</h2>
-            <p className="text-purple-600 dark:text-purple-300 mt-2">Analyze your sales performance</p>
+            <h2 className="text-3xl font-bold text-purple-900">Sales Reports</h2>
+            <p className="text-purple-600 mt-2">Analyze your sales performance</p>
           </div>
           <div className="flex items-center gap-4">
             <select
               value={period}
               onChange={(e) => setPeriod(e.target.value)}
-              className="px-4 py-2 rounded-xl border border-purple-200 bg-white dark:bg-slate-800 text-purple-900 dark:text-purple-50"
+              className="px-4 py-2 rounded-xl border border-purple-200 bg-white text-purple-900"
             >
               <option value="daily">Daily</option>
               <option value="weekly">Weekly</option>
@@ -97,11 +97,11 @@ const SalesReports = () => {
             </div>
           </div>
           
-          <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg border border-purple-100">
+          <div className="bg-white rounded-xl p-6 shadow-lg border border-purple-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-600 dark:text-purple-300 text-sm">Total Orders</p>
-                <p className="text-3xl font-bold text-purple-900 dark:text-purple-50 mt-2">
+                <p className="text-purple-600 text-sm">Total Orders</p>
+                <p className="text-3xl font-bold text-purple-900 mt-2">
                   {summary.totalOrders?.toLocaleString() || 0}
                 </p>
               </div>
@@ -109,11 +109,11 @@ const SalesReports = () => {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg border border-purple-100">
+          <div className="bg-white rounded-xl p-6 shadow-lg border border-purple-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-600 dark:text-purple-300 text-sm">Avg Order Value</p>
-                <p className="text-3xl font-bold text-purple-900 dark:text-purple-50 mt-2 flex items-center">
+                <p className="text-purple-600 text-sm">Avg Order Value</p>
+                <p className="text-3xl font-bold text-purple-900 mt-2 flex items-center">
                   <IndianRupee size={20} />{summary.averageOrderValue?.toLocaleString() || 0}
                 </p>
               </div>
@@ -121,11 +121,11 @@ const SalesReports = () => {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg border border-purple-100">
+          <div className="bg-white rounded-xl p-6 shadow-lg border border-purple-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-600 dark:text-purple-300 text-sm">Top Category</p>
-                <p className="text-xl font-bold text-purple-900 dark:text-purple-50 mt-2">
+                <p className="text-purple-600 text-sm">Top Category</p>
+                <p className="text-xl font-bold text-purple-900 mt-2">
                   {summary.topCategory || 'N/A'}
                 </p>
               </div>
@@ -135,7 +135,7 @@ const SalesReports = () => {
         </div>
 
         {/* Reports Table */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow overflow-hidden">
+        <div className="bg-white rounded-lg shadow overflow-hidden">
           <table className="w-full">
             <thead className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
               <tr>
@@ -157,19 +157,19 @@ const SalesReports = () => {
                 </tr>
               ) : (
                 reports.map((report, index) => (
-                  <tr key={report._id || index} className="border-b border-purple-200 dark:border-purple-700 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors">
-                    <td className="px-6 py-4 font-medium text-purple-900 dark:text-purple-50">
+                  <tr key={report._id || index} className="border-b border-purple-200 hover:bg-purple-50 transition-colors">
+                    <td className="px-6 py-4 font-medium text-purple-900">
                       {report.period}
                     </td>
-                    <td className="px-6 py-4 text-purple-900 dark:text-purple-50 font-semibold">
+                    <td className="px-6 py-4 text-purple-900 font-semibold">
                       <span className="flex items-center">
                         <IndianRupee size={14} />{report.totalSales?.toLocaleString() || 0}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-purple-900 dark:text-purple-50">
+                    <td className="px-6 py-4 text-purple-900">
                       {report.orderCount || 0}
                     </td>
-                    <td className="px-6 py-4 text-purple-900 dark:text-purple-50">
+                    <td className="px-6 py-4 text-purple-900">
                       <span className="flex items-center">
                         <IndianRupee size={14} />{report.averageOrderValue?.toLocaleString() || 0}
                       </span>
@@ -189,8 +189,8 @@ const SalesReports = () => {
         </div>
 
         {/* Visual Chart Placeholder */}
-        <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg">
-          <h3 className="text-lg font-bold text-purple-900 dark:text-purple-50 mb-4">Sales Trend</h3>
+        <div className="bg-white rounded-xl p-6 shadow-lg">
+          <h3 className="text-lg font-bold text-purple-900 mb-4">Sales Trend</h3>
           <div className="h-64 flex items-end justify-around gap-2 px-4">
             {reports.slice(0, 12).map((report, index) => (
               <div key={index} className="flex flex-col items-center flex-1">
@@ -200,7 +200,7 @@ const SalesReports = () => {
                     height: `${Math.max(20, (report.totalSales / (Math.max(...reports.map(r => r.totalSales)) || 1)) * 200)}px` 
                   }}
                 ></div>
-                <p className="text-xs text-purple-600 dark:text-purple-300 mt-2 truncate w-full text-center">
+                <p className="text-xs text-purple-600 mt-2 truncate w-full text-center">
                   {report.period?.slice(0, 3) || `#${index + 1}`}
                 </p>
               </div>

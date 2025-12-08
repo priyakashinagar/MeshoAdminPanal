@@ -105,14 +105,14 @@ const Inventory = () => {
 
         {/* Search Bar and Add Inventory Button */}
         <div className="flex items-center mb-2">
-          <div className="flex items-center gap-2 bg-purple-100 dark:bg-purple-900 rounded-full px-5 py-2 shadow focus-within:ring-2 focus-within:ring-pink-400 w-96">
-            <svg xmlns="http://www.w3.org/2000/svg" className="text-purple-600 dark:text-purple-300" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" /></svg>
+          <div className="flex items-center gap-2 bg-purple-100 rounded-full px-5 py-2 shadow focus-within:ring-2 focus-within:ring-pink-400 w-96">
+            <svg xmlns="http://www.w3.org/2000/svg" className="text-purple-600" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" /></svg>
             <input
               type="text"
               placeholder="Search Product Name"
               value={search}
               onChange={handleSearchChange}
-              className="border-0 bg-transparent text-purple-900 dark:text-purple-50 outline-none w-full text-lg placeholder-purple-400"
+              className="border-0 bg-transparent text-purple-900 outline-none w-full text-lg placeholder-purple-400"
             />
           </div>
           <button
@@ -166,31 +166,31 @@ const Inventory = () => {
         {/* Dashboard Cards - Full width on laptop screens */}
         <div className="w-full mb-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
-            <Card className="p-6 border-0 shadow-lg bg-white dark:bg-slate-900 w-full">
+            <Card className="p-6 border-0 shadow-lg bg-white w-full">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-purple-600 dark:text-purple-300 mb-2">Total Items</p>
-                  <p className="text-3xl font-normal text-purple-900 dark:text-purple-50">{getTotalValue()}</p>
+                  <p className="text-sm text-purple-600 mb-2">Total Items</p>
+                  <p className="text-3xl font-normal text-purple-900">{getTotalValue()}</p>
                 </div>
-                <Package className="text-pink-600 dark:text-pink-400" size={40} />
+                <Package className="text-pink-600" size={40} />
               </div>
             </Card>
-            <Card className="p-6 border-0 shadow-lg bg-white dark:bg-slate-900 w-full">
+            <Card className="p-6 border-0 shadow-lg bg-white w-full">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-purple-600 dark:text-purple-300 mb-2">Low Stock Items</p>
-                  <p className="text-3xl font-normal text-pink-600 dark:text-pink-400">{getLowStockItems().length}</p>
+                  <p className="text-sm text-purple-600 mb-2">Low Stock Items</p>
+                  <p className="text-3xl font-normal text-pink-600">{getLowStockItems().length}</p>
                 </div>
-                <AlertTriangle className="text-pink-600 dark:text-pink-400" size={40} />
+                <AlertTriangle className="text-pink-600" size={40} />
               </div>
             </Card>
-            <Card className="p-6 border-0 shadow-lg bg-white dark:bg-slate-900 w-full">
+            <Card className="p-6 border-0 shadow-lg bg-white w-full">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-purple-600 dark:text-purple-300 mb-2">Total Products</p>
-                  <p className="text-3xl font-normal text-purple-900 dark:text-purple-50">{products.length}</p>
+                  <p className="text-sm text-purple-600 mb-2">Total Products</p>
+                  <p className="text-3xl font-normal text-purple-900">{products.length}</p>
                 </div>
-                <TrendingUp className="text-pink-600 dark:text-pink-400" size={40} />
+                <TrendingUp className="text-pink-600" size={40} />
               </div>
             </Card>
           </div>

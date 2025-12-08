@@ -97,28 +97,28 @@ const Reviews = () => {
     <AdminLayout>
       <div className="space-y-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-purple-900 dark:text-purple-50">Reviews & Ratings</h1>
-          <p className="text-purple-600 dark:text-purple-300 mt-2">Total Reviews: {pagination.total}</p>
+          <h1 className="text-3xl font-bold text-purple-900">Reviews & Ratings</h1>
+          <p className="text-purple-600 mt-2">Total Reviews: {pagination.total}</p>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
-          <div className="bg-white dark:bg-slate-800 rounded-xl p-4 shadow col-span-2">
-            <p className="text-sm text-purple-600 dark:text-purple-300">Average Rating</p>
+          <div className="bg-white rounded-xl p-4 shadow col-span-2">
+            <p className="text-sm text-purple-600">Average Rating</p>
             <div className="flex items-center gap-2">
-              <p className="text-2xl font-bold text-purple-900 dark:text-purple-50">
+              <p className="text-2xl font-bold text-purple-900">
                 {stats.averageRating?.toFixed(1) || '0.0'}
               </p>
               <div className="flex">{renderStars(Math.round(stats.averageRating || 0))}</div>
             </div>
           </div>
           {[5, 4, 3, 2, 1].map(rating => (
-            <div key={rating} className="bg-white dark:bg-slate-800 rounded-xl p-4 shadow">
+            <div key={rating} className="bg-white rounded-xl p-4 shadow">
               <div className="flex items-center gap-1 mb-1">
                 <span className="text-sm font-medium">{rating}</span>
                 <Star size={14} className="text-yellow-500 fill-yellow-500" />
               </div>
-              <p className="text-xl font-bold text-purple-900 dark:text-purple-50">
+              <p className="text-xl font-bold text-purple-900">
                 {stats.ratingDistribution?.[rating] || 0}
               </p>
             </div>
@@ -127,20 +127,20 @@ const Reviews = () => {
 
         {/* Search and Filter */}
         <div className="flex items-center gap-4 mb-4 flex-wrap">
-          <div className="flex items-center gap-2 bg-purple-100 dark:bg-purple-900 rounded-full px-5 py-2 shadow focus-within:ring-2 focus-within:ring-pink-400 w-80">
-            <svg xmlns="http://www.w3.org/2000/svg" className="text-purple-600 dark:text-purple-300" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" /></svg>
+          <div className="flex items-center gap-2 bg-purple-100 rounded-full px-5 py-2 shadow focus-within:ring-2 focus-within:ring-pink-400 w-80">
+            <svg xmlns="http://www.w3.org/2000/svg" className="text-purple-600" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" /></svg>
             <input
               type="text"
               placeholder="Search by user or product..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="border-0 bg-transparent text-purple-900 dark:text-purple-50 outline-none w-full text-base placeholder-purple-400"
+              className="border-0 bg-transparent text-purple-900 outline-none w-full text-base placeholder-purple-400"
             />
           </div>
           <select
             value={ratingFilter}
             onChange={(e) => setRatingFilter(e.target.value)}
-            className="px-4 py-2 rounded-xl border border-purple-200 bg-white dark:bg-slate-800 text-purple-900 dark:text-purple-50"
+            className="px-4 py-2 rounded-xl border border-purple-200 bg-white text-purple-900"
           >
             <option value="">All Ratings</option>
             <option value="5">5 Stars</option>
@@ -153,7 +153,7 @@ const Reviews = () => {
         </div>
 
         {/* Reviews Table */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow overflow-hidden">
+        <div className="bg-white rounded-lg shadow overflow-hidden">
           <table className="w-full">
             <thead className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
               <tr>
@@ -174,13 +174,13 @@ const Reviews = () => {
                 </tr>
               ) : (
                 reviews.map((review) => (
-                  <tr key={review._id} className="border-b border-purple-200 dark:border-purple-700 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors">
+                  <tr key={review._id} className="border-b border-purple-200 hover:bg-purple-50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
                           <User size={16} className="text-purple-600" />
                         </div>
-                        <span className="font-medium text-purple-900 dark:text-purple-50">
+                        <span className="font-medium text-purple-900">
                           {review.userName || 'Anonymous'}
                         </span>
                       </div>
@@ -188,7 +188,7 @@ const Reviews = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <Package size={16} className="text-pink-500" />
-                        <span className="text-purple-900 dark:text-purple-50 text-sm">
+                        <span className="text-purple-900 text-sm">
                           {review.productName || 'Unknown Product'}
                         </span>
                       </div>
@@ -199,11 +199,11 @@ const Reviews = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <p className="text-purple-700 dark:text-purple-300 text-sm max-w-xs truncate" title={review.review}>
+                      <p className="text-purple-700 text-sm max-w-xs truncate" title={review.review}>
                         {review.review || 'No comment'}
                       </p>
                     </td>
-                    <td className="px-6 py-4 text-purple-900 dark:text-purple-50 text-sm">
+                    <td className="px-6 py-4 text-purple-900 text-sm">
                       {review.createdAt ? new Date(review.createdAt).toLocaleDateString() : 'N/A'}
                     </td>
                     <td className="px-6 py-4">

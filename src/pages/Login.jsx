@@ -302,7 +302,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white to-purple-50 dark:from-slate-950 dark:to-purple-950 px-2 sm:px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white to-purple-50 px-2 sm:px-4">
       <Card className="w-full max-w-sm sm:max-w-md p-4 sm:p-8 shadow-lg">
         <div className="flex justify-center mb-8">
           <div className="bg-gradient-to-br from-purple-600 to-pink-600 text-white p-3 rounded-lg">
@@ -311,14 +311,14 @@ export default function LoginPage() {
         </div>
 
         <h1 className="text-2xl sm:text-3xl font-bold text-center mb-2">meesho</h1>
-        <p className="text-center text-gray-600 dark:text-gray-400 mb-6 sm:mb-8">
+        <p className="text-center text-gray-600 mb-6 sm:mb-8">
           E-commerce Dashboard
         </p>
 
         {/* Show continue registration banner for incomplete sellers */}
         {isAuthenticated && user?.role === 'seller' && !user?.sellerId && step === 'input' && (
-          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-6">
-            <p className="text-yellow-800 dark:text-yellow-400 text-sm mb-3">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+            <p className="text-yellow-800 text-sm mb-3">
               👋 Welcome back! Your registration is incomplete.
             </p>
             <div className="flex flex-col gap-2">
@@ -353,7 +353,7 @@ export default function LoginPage() {
                 value={inputValue}
                 onChange={handleInputChange}
                 placeholder="Enter 10-digit mobile number"
-                className="w-full px-4 py-2 border border-purple-200 dark:border-purple-800 rounded-lg bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                className="w-full px-4 py-2 border border-purple-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-purple-600"
                 maxLength={10}
               />
               {isCheckingPhone && (
@@ -365,8 +365,8 @@ export default function LoginPage() {
 
             {/* Show "Click here to Login" if user exists in database */}
             {isExistingUser && !isCheckingPhone && (
-              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 text-center">
-                <p className="text-green-700 dark:text-green-400 text-sm mb-2">
+              <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-center">
+                <p className="text-green-700 text-sm mb-2">
                   ✓ This number is already registered
                 </p>
                 <button
@@ -421,7 +421,7 @@ export default function LoginPage() {
                     onKeyDown={(e) => handleOtpKeyDown(index, e)}
                     onPaste={handleOtpPaste}
                     className={`w-10 h-12 text-center text-xl font-bold border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${
-                      digit ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20' : 'border-purple-200 dark:border-purple-800'
+                      digit ? 'border-purple-500 bg-purple-50' : 'border-purple-200'
                     }`}
                   />
                 ))}
@@ -466,7 +466,7 @@ export default function LoginPage() {
                 value={inputValue}
                 onChange={handleEmailChange}
                 placeholder="Enter admin email"
-                className="w-full px-4 py-2 border border-purple-200 dark:border-purple-800 rounded-lg bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                className="w-full px-4 py-2 border border-purple-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-purple-600"
               />
             </div>
             
@@ -477,7 +477,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter password"
-                className="w-full px-4 py-2 border border-purple-200 dark:border-purple-800 rounded-lg bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                className="w-full px-4 py-2 border border-purple-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-purple-600"
               />
             </div>
 
@@ -501,7 +501,7 @@ export default function LoginPage() {
           </form>
         )}
 
-        <div className="mt-6 pt-6 border-t border-purple-200 dark:border-purple-800 text-center text-sm text-gray-600 dark:text-gray-400">
+        <div className="mt-6 pt-6 border-t border-purple-200 text-center text-sm text-gray-600">
           <p className="font-medium mb-2">Test Credentials:</p>
           <p>Seller OTP: 999000</p>
           <p>Admin: admin@meesho.com / Admin@123</p>

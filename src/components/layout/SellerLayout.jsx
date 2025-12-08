@@ -67,7 +67,19 @@ const SellerLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 768);
   const [openSubmenu, setOpenSubmenu] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [storeName, setStoreName] = useState('My Store');
+  const [storeName, setStoreName] = useState(() => {
+    try {
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        const parsed = JSON.parse(userStr);
+        // user may contain seller or shopName depending on login flow
+        return parsed?.seller?.shopName || parsed?.shopName || parsed?.storeName || 'My Store';
+      }
+    } catch (e) {
+      // ignore parse errors
+    }
+    return 'My Store';
+  });
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -110,8 +122,21 @@ const SellerLayout = ({ children }) => {
     const fetchSellerProfile = async () => {
       try {
         const response = await sellerService.getProfile();
-        if (response?.seller?.shopName) {
-          setStoreName(response.seller.shopName);
+        // seller may be nested or returned directly
+        const seller = response?.seller || response?.data?.seller || response;
+        if (seller?.shopName) {
+          setStoreName(seller.shopName);
+          // update localStorage user object so UI shows backend-authoritative name
+          try {
+            const userStr = localStorage.getItem('user');
+            const userObj = userStr ? JSON.parse(userStr) : {};
+            userObj.seller = seller;
+            // also sync top-level shopName if desired
+            if (!userObj.shopName) userObj.shopName = seller.shopName;
+            localStorage.setItem('user', JSON.stringify(userObj));
+          } catch (e) {
+            // ignore storage errors
+          }
         }
       } catch (err) {
         console.log('Could not fetch seller profile:', err);
@@ -150,7 +175,7 @@ const SellerLayout = ({ children }) => {
   }, []);
 
   return (
-    <div className="min-h-screen flex bg-gray-50 dark:bg-slate-950">
+    <div className="min-h-screen flex bg-gray-50">
       {/* Burger icon for mobile */}
       <button
         className="md:hidden fixed top-4 left-4 z-[101] bg-white rounded-full p-2 shadow-lg border border-purple-200"
@@ -163,7 +188,7 @@ const SellerLayout = ({ children }) => {
 
       {/* Sidebar - responsive */}
       <aside
-        className={`bg-gradient-to-b from-purple-300 to-purple-100 dark:from-purple-900 dark:to-purple-950 fixed top-0 left-0 h-full min-h-screen border-r border-purple-200 overflow-y-auto shadow-lg z-[100] transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:w-64 w-72`}
+        className={`bg-gradient-to-b from-purple-300 to-purple-100 fixed top-0 left-0 h-full min-h-screen border-r border-purple-200 overflow-y-auto shadow-lg z-[100] transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:w-64 w-72`}
         style={{ color: '#59168B' }}
       >
         {/* Close icon for mobile */}
@@ -235,26 +260,26 @@ const SellerLayout = ({ children }) => {
 
       {/* Main Content - responsive margin */}
       <main className="flex-1 md:ml-64 transition-all w-full max-w-full overflow-x-hidden">
-        <div className="border-b border-purple-200 dark:border-purple-900 bg-white dark:bg-slate-900 sticky top-0 z-50 shadow-sm">
+        <div className="border-b border-purple-200 bg-white sticky top-0 z-50 shadow-sm">
           <div className="px-4 md:px-8 py-1 flex justify-between items-center">
-            <h2 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
+            <h2 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
               {location.pathname.split('/')[1]?.toUpperCase() || 'Dashboard'}
             </h2>
             <div className="flex items-center gap-4">
               <div className="relative">
-                <button onClick={() => setProfileOpen(!profileOpen)} className="flex items-center gap-2 px-3 py-2 hover:bg-purple-100 dark:hover:bg-purple-900/30 rounded-lg transition-colors">
+                <button onClick={() => setProfileOpen(!profileOpen)} className="flex items-center gap-2 px-3 py-2 hover:bg-purple-100 rounded-lg transition-colors">
                   <div className="w-9 h-9 bg-gradient-to-br from-purple-600 to-pink-600 text-white rounded-full flex items-center justify-center font-bold">
                     {userEmail[0].toUpperCase()}
                   </div>
-                  <ChevronDown size={16} className="text-gray-600 dark:text-gray-400" />
+                  <ChevronDown size={16} className="text-gray-600" />
                 </button>
                 {profileOpen && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-800 rounded-lg shadow-xl z-[100]">
-                    <div className="px-4 py-3 border-b border-purple-200 dark:border-purple-800">
-                      <p className="text-sm font-semibold text-gray-900 dark:text-white">{userEmail}</p>
-                      <p className="text-xs text-purple-600 dark:text-purple-400 font-medium mt-1">Seller Account</p>
+                  <div className="absolute right-0 mt-2 w-56 bg-white border border-purple-200 rounded-lg shadow-xl z-[100]">
+                    <div className="px-4 py-3 border-b border-purple-200">
+                      <p className="text-sm font-semibold text-gray-900">{userEmail}</p>
+                      <p className="text-xs text-purple-600 font-medium mt-1">Seller Account</p>
                     </div>
-                    <button onClick={handleLogout} className="w-full px-4 py-3 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-2">
+                    <button onClick={handleLogout} className="w-full px-4 py-3 text-left text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2">
                       <LogOut size={16} />
                       Logout
                     </button>

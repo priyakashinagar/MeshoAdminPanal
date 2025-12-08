@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { Menu, X, LogOut, Moon, Sun, ChevronDown, Settings, User, BarChart3, Headphones, Cog, CreditCard, Truck, Layers, ShoppingCart, Users, Package } from 'lucide-react';
+import { logout } from '../../redux/slices/authSlice';
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: BarChart3 },
@@ -57,34 +59,57 @@ const navItems = [
 
 const AdminLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 768);
-  const [darkMode, setDarkMode] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const authToken = localStorage.getItem('authToken');
-    if (!authToken) navigate('/login');
-    const isDark = localStorage.getItem('darkMode') === 'true';
-    setDarkMode(isDark);
-    if (isDark) document.documentElement.classList.add('dark');
+    const userStr = localStorage.getItem('user');
+    
+    // Check if user is authenticated
+    if (!authToken || !userStr) {
+      console.log('No auth found, redirecting to login');
+      navigate('/login');
+      return;
+    }
+    
+    // Verify user role is admin
+    try {
+      const user = JSON.parse(userStr);
+      if (user.role !== 'admin') {
+        console.log('Unauthorized access attempt to admin panel by:', user.role);
+        // Redirect based on role
+        if (user.role === 'seller') {
+          navigate('/seller');
+        } else {
+          navigate('/login');
+        }
+        return;
+      }
+    } catch (err) {
+      console.error('Invalid user data:', err);
+      localStorage.clear();
+      navigate('/login');
+      return;
+    }
+    
+    // Ensure light mode always
+    document.documentElement.classList.remove('dark');
   }, [navigate]);
 
-  const toggleDarkMode = () => {
-    const newMode = !darkMode;
-    setDarkMode(newMode);
-    localStorage.setItem('darkMode', String(newMode));
-    if (newMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  };
-
   const handleLogout = () => {
-    localStorage.clear();
-    navigate('/login');
+    console.log('🚺 Logging out (Admin)...');
+    
+    // Dispatch Redux logout action to clear state
+    dispatch(logout());
+    
+    // Navigate to login page
+    navigate('/login', { replace: true });
+    
+    console.log('✅ Logout complete, redirected to login');
   };
 
   const isActive = (href) => location.pathname === href;
@@ -128,7 +153,7 @@ const AdminLayout = ({ children }) => {
         <div className="p-6 flex justify-between items-center border-b border-purple-500/30">
           <h1 className="text-2xl font-bold text-[#E639AC]">meesho</h1>
         </div>
-        <nav className="mt-8 space-y-2 px-3">
+        <nav className="mt-8 space-y-2 px-3 pb-20 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
           {navItems.map((item) => {
             const Icon = item.icon;
             const hasSubmenu = item.submenu && item.submenu.length > 0;
@@ -183,14 +208,11 @@ const AdminLayout = ({ children }) => {
       {/* Main Content - responsive margin */}
       <main className="flex-1 md:ml-64 transition-all">
         <div className="border-b border-purple-200 dark:border-purple-900 bg-white dark:bg-slate-900 sticky top-0 z-40 shadow-sm">
-          <div className="px-4 md:px-8 py-4 flex flex-col md:flex-row justify-between items-center gap-2 md:gap-0">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent w-full md:w-auto text-center md:text-left">
+          <div className="px-4 md:px-8 py-1 flex flex-col md:flex-row justify-between items-center gap-2 md:gap-0">
+            <h2 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent w-full md:w-auto text-center md:text-left">
               {location.pathname === '/' ? 'Dashboard' : location.pathname.split('/')[1]?.toUpperCase()}
             </h2>
-            <div className="flex items-center gap-2 md:gap-4">
-              <button onClick={toggleDarkMode} className="p-2 hover:bg-purple-100 dark:hover:bg-purple-900/30 rounded-lg transition-colors">
-                {darkMode ? <Sun size={20} className="text-yellow-500" /> : <Moon size={20} className="text-slate-700" />}
-              </button>
+            <div className="flex items-center gap-4">
               <div className="relative">
                 <button onClick={() => setProfileOpen(!profileOpen)} className="flex items-center gap-2 px-3 py-2 hover:bg-purple-100 dark:hover:bg-purple-900/30 rounded-lg transition-colors">
                   <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-pink-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
@@ -212,7 +234,7 @@ const AdminLayout = ({ children }) => {
             </div>
           </div>
         </div>
-        <div >{children}</div>
+        <div className="p-3 md:p-4">{children}</div>
       </main>
     </div>
   );

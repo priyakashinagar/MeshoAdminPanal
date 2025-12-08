@@ -1,23 +1,51 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { Menu, X, LogOut, Moon, Sun, ChevronDown } from 'lucide-react';
+import { logout } from '../../redux/slices/authSlice';
+import sellerService from '../../services/sellerService';
 
 const navItems = [
-  { href: '/seller', label: 'Dashboard' },
-  {
-    label: 'Products',
-    submenu: [
-      { href: '/seller/products', label: 'My Products' },
-      { href: '/seller/products/new', label: 'Add New Product' },
-    ],
-  },
+  { href: '/seller', label: 'Dashboard', section: 'Manage Business' },
   {
     label: 'Orders',
+    section: 'Manage Business',
     submenu: [
       { href: '/seller/orders', label: 'All Orders' },
       { href: '/seller/returns', label: 'Returns' },
     ],
   },
+  { 
+    label: 'Pricing', 
+    section: 'Manage Business',
+    submenu: [
+      { href: '/seller/pricing', label: 'Manage Pricing' },
+      { href: '/seller/auto-pricing', label: 'Auto-Pricing' },
+      { href: '/seller/reduce-rtos', label: 'Reduce RTOs & Returns' },
+    ],
+  },
+  { href: '/seller/claims', label: 'Claims', section: 'Manage Business' },
+  { href: '/seller/inventory', label: 'Inventory', section: 'Manage Business' },
+  {
+    label: 'Products',
+    section: 'Manage Business',
+    submenu: [
+      { href: '/seller/products', label: 'My Products' },
+      { href: '/seller/products/new', label: 'Add New Product' },
+      { href: '/seller/catalog-uploads', label: 'Catalog Uploads' },
+      { href: '/seller/image-bulk-upload', label: 'Image Bulk Upload' },
+    ],
+  },
+  { href: '/seller/quality', label: 'Quality', section: 'Manage Business' },
+  { href: '/seller/payments', label: 'Payments', section: 'Manage Business' },
+  { href: '/seller/warehouse', label: 'Warehouse', section: 'Manage Business' },
+  
+  { href: '/seller/influencer-marketing', label: 'Influencer Marketing', section: 'Boost Sales' },
+  { href: '/seller/promotions', label: 'Promotions', section: 'Boost Sales' },
+  { href: '/seller/instant-cash', label: 'Instant Cash', section: 'Boost Sales' },
+  
+  { href: '/seller/business-dashboard', label: 'Business Dashboard', section: 'Performance' },
+  
   {
     label: 'Earnings',
     submenu: [
@@ -37,34 +65,76 @@ const navItems = [
 
 const SellerLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 768);
-  const [darkMode, setDarkMode] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [storeName, setStoreName] = useState('My Store');
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const authToken = localStorage.getItem('authToken');
-    if (!authToken) navigate('/login');
-    const isDark = localStorage.getItem('darkMode') === 'true';
-    setDarkMode(isDark);
-    if (isDark) document.documentElement.classList.add('dark');
+    const userStr = localStorage.getItem('user');
+    
+    // Check if user is authenticated
+    if (!authToken || !userStr) {
+      console.log('No auth found, redirecting to login');
+      navigate('/login');
+      return;
+    }
+    
+    // Verify user role is seller
+    try {
+      const user = JSON.parse(userStr);
+      if (user.role !== 'seller') {
+        console.log('Unauthorized access attempt to seller panel by:', user.role);
+        // Redirect based on role
+        if (user.role === 'admin') {
+          navigate('/admin');
+        } else {
+          navigate('/login');
+        }
+        return;
+      }
+    } catch (err) {
+      console.error('Invalid user data:', err);
+      localStorage.clear();
+      navigate('/login');
+      return;
+    }
+    
+    // Ensure light mode always
+    document.documentElement.classList.remove('dark');
+    
+    // Fetch seller profile to get store name
+    const fetchSellerProfile = async () => {
+      try {
+        const response = await sellerService.getProfile();
+        if (response?.seller?.shopName) {
+          setStoreName(response.seller.shopName);
+        }
+      } catch (err) {
+        console.log('Could not fetch seller profile:', err);
+        // If API fails with 401/403, clear auth and redirect
+        if (err.response?.status === 401 || err.response?.status === 403) {
+          localStorage.clear();
+          navigate('/login');
+        }
+      }
+    };
+    if (authToken) fetchSellerProfile();
   }, [navigate]);
 
-  const toggleDarkMode = () => {
-    const newMode = !darkMode;
-    setDarkMode(newMode);
-    localStorage.setItem('darkMode', String(newMode));
-    if (newMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  };
-
   const handleLogout = () => {
-    localStorage.clear();
-    navigate('/login');
+    console.log('🚪 Logging out...');
+    
+    // Dispatch Redux logout action to clear state
+    dispatch(logout());
+    
+    // Navigate to login page
+    navigate('/login', { replace: true });
+    
+    console.log('✅ Logout complete, redirected to login');
   };
 
   const isActive = (href) => location.pathname === href;
@@ -80,7 +150,7 @@ const SellerLayout = ({ children }) => {
   }, []);
 
   return (
-    <div className="min-h-screen flex bg-purple-10 dark:bg-slate-50" style={{ zoom: 0.92 }}>
+    <div className="min-h-screen flex bg-gray-50 dark:bg-slate-950">
       {/* Burger icon for mobile */}
       <button
         className="md:hidden fixed top-4 left-4 z-[101] bg-white rounded-full p-2 shadow-lg border border-purple-200"
@@ -103,16 +173,25 @@ const SellerLayout = ({ children }) => {
           </button>
         </div>
         <div className="p-6 flex justify-between items-center border-b border-purple-500/30">
-          <h1 className="text-2xl font-bold text-[#E639AC]">meesho Seller</h1>
+          <h1 className="text-2xl font-bold text-[#E639AC] truncate" title={storeName}>{storeName}</h1>
         </div>
-        <nav className="mt-8 space-y-2 px-3">
-          {navItems.map((item) => {
+        <nav className="mt-8 space-y-2 px-3 pb-20 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
+          {navItems.map((item, index) => {
             const hasSubmenu = item.submenu && item.submenu.length > 0;
             const isOpen = openSubmenu === item.label;
             const isItemActive = item.submenu ? item.submenu.some(s => isActive(s.href)) : isActive(item.href);
             const buttonClasses = isItemActive ? 'bg-gradient-to-r from-pink-500 to-purple-600 shadow-lg scale-105' : 'hover:bg-purple-700/50';
+            
+            // Check if we need to show a section heading
+            const showSectionHeading = item.section && (index === 0 || navItems[index - 1].section !== item.section);
+            
             return (
               <div key={item.label || item.href}>
+                {showSectionHeading && (
+                  <div className="text-xs font-semibold text-purple-700/60 uppercase tracking-wider px-4 py-2 mt-4">
+                    {item.section}
+                  </div>
+                )}
                 <button
                   onClick={() => {
                     if (hasSubmenu) {
@@ -155,29 +234,28 @@ const SellerLayout = ({ children }) => {
       </aside>
 
       {/* Main Content - responsive margin */}
-      <main className="flex-1 md:ml-64 transition-all">
-        <div className="border-b border-purple-200 dark:border-purple-900 bg-white dark:bg-slate-900 sticky top-0 z-40 shadow-sm">
-          <div className="px-4 md:px-8 py-4 flex flex-col md:flex-row justify-between items-center gap-2 md:gap-0">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent w-full md:w-auto text-center md:text-left">
+      <main className="flex-1 md:ml-64 transition-all w-full max-w-full overflow-x-hidden">
+        <div className="border-b border-purple-200 dark:border-purple-900 bg-white dark:bg-slate-900 sticky top-0 z-50 shadow-sm">
+          <div className="px-4 md:px-8 py-1 flex justify-between items-center">
+            <h2 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
               {location.pathname.split('/')[1]?.toUpperCase() || 'Dashboard'}
             </h2>
-            <div className="flex items-center gap-2 md:gap-4">
-              <button onClick={toggleDarkMode} className="p-2 hover:bg-purple-100 dark:hover:bg-purple-900/30 rounded-lg transition-colors">
-                {darkMode ? <Sun size={20} className="text-yellow-500" /> : <Moon size={20} className="text-slate-700" />}
-              </button>
+            <div className="flex items-center gap-4">
               <div className="relative">
                 <button onClick={() => setProfileOpen(!profileOpen)} className="flex items-center gap-2 px-3 py-2 hover:bg-purple-100 dark:hover:bg-purple-900/30 rounded-lg transition-colors">
-                  <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-pink-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                  <div className="w-9 h-9 bg-gradient-to-br from-purple-600 to-pink-600 text-white rounded-full flex items-center justify-center font-bold">
                     {userEmail[0].toUpperCase()}
                   </div>
+                  <ChevronDown size={16} className="text-gray-600 dark:text-gray-400" />
                 </button>
                 {profileOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-800 rounded-lg shadow-lg z-50">
+                  <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-800 rounded-lg shadow-xl z-[100]">
                     <div className="px-4 py-3 border-b border-purple-200 dark:border-purple-800">
-                      <p className="text-sm font-medium">{userEmail}</p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">Seller</p>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-white">{userEmail}</p>
+                      <p className="text-xs text-purple-600 dark:text-purple-400 font-medium mt-1">Seller Account</p>
                     </div>
-                    <button onClick={handleLogout} className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                    <button onClick={handleLogout} className="w-full px-4 py-3 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-2">
+                      <LogOut size={16} />
                       Logout
                     </button>
                   </div>
@@ -186,7 +264,9 @@ const SellerLayout = ({ children }) => {
             </div>
           </div>
         </div>
-        <div >{children}</div>
+        <div className="w-full max-w-full overflow-x-hidden p-2 md:p-3">
+          {children}
+        </div>
       </main>
     </div>
   );

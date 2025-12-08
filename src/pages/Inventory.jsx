@@ -1,59 +1,104 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import AdminLayout from '../components/layout/AdminLayout';
 import Card from '../components/common/Card';
 import { AlertTriangle, Package, TrendingUp } from 'lucide-react';
-
-const inventoryData = [
-  { id: 1, product: 'iPhone 15 Pro', sku: 'SKU-001', current: 45, minimum: 20, reorder: 100 },
-  { id: 2, product: 'Premium Headphones', sku: 'SKU-002', current: 120, minimum: 30, reorder: 150 },
-  { id: 3, product: 'Wireless Charger', sku: 'SKU-003', current: 200, minimum: 50, reorder: 300 },
-  { id: 4, product: 'USB-C Cable', sku: 'SKU-004', current: 500, minimum: 100, reorder: 800 },
-  { id: 5, product: 'Laptop Stand', sku: 'SKU-005', current: 15, minimum: 25, reorder: 75 },
-];
+import { fetchProducts, updateProduct } from '../redux/slices/productSlice';
 
 const Inventory = () => {
-  const [inventory, setInventory] = useState(inventoryData);
-  const [form, setForm] = useState({ product: '', sku: '', current: '', minimum: '', reorder: '' });
+  const dispatch = useDispatch();
+  const { products, loading } = useSelector((state) => state.product || { products: [], loading: false });
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [stockForm, setStockForm] = useState({ quantity: '', minimum: '' });
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  useEffect(() => {
+    dispatch(fetchProducts());
+  }, [dispatch]);
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleStockUpdate = (product) => {
+    setSelectedProduct(product);
+    setStockForm({
+      quantity: product.stock?.quantity || product.stock || 0,
+      minimum: product.minimumStock || 10
+    });
+    setShowModal(true);
+  };
+
+  const handleFormChange = (e) => {
+    setStockForm({ ...stockForm, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (form.product && form.sku && form.current && form.minimum && form.reorder) {
-      setInventory([
-        ...inventory,
-        {
-          id: inventory.length + 1,
-          product: form.product,
-          sku: form.sku,
-          current: Number(form.current),
-          minimum: Number(form.minimum),
-          reorder: Number(form.reorder),
-        },
-      ]);
-      setForm({ product: '', sku: '', current: '', minimum: '', reorder: '' });
+    try {
+      const stockQuantity = Number(stockForm.quantity) || 0;
+      const updatedData = {
+        stock: {
+          quantity: stockQuantity,
+          status: stockQuantity > 0 ? 'in_stock' : 'out_of_stock',
+          lowStockThreshold: Number(stockForm.minimum) || 10
+        }
+      };
+      
+      await dispatch(updateProduct({ id: selectedProduct._id, productData: updatedData })).unwrap();
+      setSuccessMessage('Stock updated successfully!');
+      setTimeout(() => setSuccessMessage(''), 3000);
       setShowModal(false);
+      dispatch(fetchProducts());
+    } catch (error) {
+      setErrorMessage(error.message || 'Failed to update stock');
+      setTimeout(() => setErrorMessage(''), 3000);
     }
   };
 
-  const filteredInventory = inventory.filter(item =>
-    item.product.toLowerCase().includes(search.toLowerCase())
+  const filteredInventory = products.filter(item =>
+    item.name?.toLowerCase().includes(search.toLowerCase())
   );
 
-  const getLowStockItems = () => inventory.filter(item => item.current < item.minimum);
-  const getTotalValue = () => inventory.reduce((sum, item) => sum + item.current, 0);
+  const getLowStockItems = () => products.filter(item => {
+    const stock = item.stock?.quantity || item.stock || 0;
+    const minimum = item.minimumStock || 10;
+    return stock < minimum;
+  });
+  
+  const getTotalValue = () => products.reduce((sum, item) => {
+    const stock = item.stock?.quantity || item.stock || 0;
+    return sum + stock;
+  }, 0);
+
+  if (loading) {
+    return (
+      <AdminLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-purple-600 text-xl">Loading inventory...</div>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>
-      <div className="relative ">
+      <div className="relative">
+        {/* Success/Error Messages */}
+        {successMessage && (
+          <div className="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+            {successMessage}
+          </div>
+        )}
+        {errorMessage && (
+          <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+            {errorMessage}
+          </div>
+        )}
+
         <div className="mb-2">
           <h1 className="text-3xl font-bold text-purple-900 mb-2">Inventory Management</h1>
         </div>
@@ -73,80 +118,45 @@ const Inventory = () => {
           <button
             type="button"
             className="bg-gradient-to-r from-purple-600 to-pink-500 text-white px-5 py-2 rounded-xl shadow ml-4 font-semibold text-base"
-            onClick={() => setShowModal(true)}
+            onClick={() => window.location.href = '/products'}
           >
-            Add Inventory
+            Manage Products
           </button>
         </div>
 
-        {/* Modal for Add Inventory */}
-        {showModal && (
-          <div className="fixed inset-0 flex items-center justify-center z-50" style={{ backdropFilter: 'blur(8px)' }}>
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg border border-purple-200 relative px-10 py-8 mt-4 mb-4">
-              <form onSubmit={handleSubmit} className="space-y-4 pt-4 pb-4">
-                <div>
-                  <label className="block text-lg font-bold mb-1 text-purple-700">Product Name</label>
-                  <input
-                    type="text"
-                    name="product"
-                    placeholder="Product Name"
-                    value={form.product}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-5 py-2 border border-purple-200 rounded-xl shadow-sm focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all outline-none bg-purple-50"
-                  />
-                </div>
-                <div>
-                  <label className="block text-lg font-bold mb-1 text-purple-700">SKU</label>
-                  <input
-                    type="text"
-                    name="sku"
-                    placeholder="SKU"
-                    value={form.sku}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-5 py-2 border border-purple-200 rounded-xl shadow-sm focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all outline-none bg-purple-50"
-                  />
-                </div>
+        {/* Modal for Update Stock */}
+        {showModal && selectedProduct && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 pl-[280px] pr-8 py-8">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg border border-purple-200 relative px-10 py-8">
+              <h2 className="text-2xl font-bold text-purple-900 mb-6">Update Stock - {selectedProduct.name}</h2>
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-lg font-bold mb-1 text-purple-700">Current Stock</label>
                   <input
                     type="number"
-                    name="current"
+                    name="quantity"
                     placeholder="Current Stock"
-                    value={form.current}
-                    onChange={handleChange}
+                    value={stockForm.quantity}
+                    onChange={handleFormChange}
                     required
                     className="w-full px-5 py-2 border border-purple-200 rounded-xl shadow-sm focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all outline-none bg-purple-50"
                   />
                 </div>
                 <div>
-                  <label className="block text-lg font-bold mb-1 text-purple-700">Minimum Stock</label>
+                  <label className="block text-lg font-bold mb-1 text-purple-700">Minimum Stock Level</label>
                   <input
                     type="number"
                     name="minimum"
                     placeholder="Minimum Stock"
-                    value={form.minimum}
-                    onChange={handleChange}
+                    value={stockForm.minimum}
+                    onChange={handleFormChange}
                     required
                     className="w-full px-5 py-2 border border-purple-200 rounded-xl shadow-sm focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all outline-none bg-purple-50"
                   />
                 </div>
-                <div>
-                  <label className="block text-lg font-bold mb-1 text-purple-700">Reorder Level</label>
-                  <input
-                    type="number"
-                    name="reorder"
-                    placeholder="Reorder Level"
-                    value={form.reorder}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-5 py-2 border border-purple-200 rounded-xl shadow-sm focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all outline-none bg-purple-50"
-                  />
-                </div>
-                <div className="flex justify-end gap-4 mt-4">
+                <div className="flex justify-end gap-4 mt-6">
                   <button type="button" className="bg-gray-200 hover:bg-gray-300 px-7 py-2 font-semibold rounded-xl" onClick={() => setShowModal(false)}>Cancel</button>
-                  <button type="submit" className="bg-gradient-to-r from-purple-600 to-pink-500 text-white px-7 py-2 font-semibold rounded-xl shadow">Add Inventory</button>
+                  <button type="submit" className="bg-gradient-to-r from-purple-600 to-pink-500 text-white px-7 py-2 font-semibold rounded-xl shadow">Update Stock</button>
                 </div>
               </form>
             </div>
@@ -178,7 +188,7 @@ const Inventory = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-purple-600 dark:text-purple-300 mb-2">Total Products</p>
-                  <p className="text-3xl font-normal text-purple-900 dark:text-purple-50">{inventory.length}</p>
+                  <p className="text-3xl font-normal text-purple-900 dark:text-purple-50">{products.length}</p>
                 </div>
                 <TrendingUp className="text-pink-600 dark:text-pink-400" size={40} />
               </div>
@@ -188,38 +198,53 @@ const Inventory = () => {
 
         {/* Inventory Table faded when modal is open */}
         <div className={showModal ? "opacity-40 pointer-events-none blur-sm" : "opacity-100"}>
-          <div className="bg-white rounded-lg shadow p-6 mt-0">
-            <table className="w-full">
+          <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[800px]">
               <thead className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
                 <tr>
                   <th className="px-3 py-4 text-left font-bold not-italic">Product</th>
                   <th className="px-3 py-4 text-left font-bold not-italic">SKU</th>
                   <th className="px-3 py-4 text-left font-bold not-italic">Current Stock</th>
                   <th className="px-3 py-4 text-left font-bold not-italic">Minimum Level</th>
-                  <th className="px-3 py-4 text-left font-bold not-italic">Reorder Qty</th>
+                  <th className="px-3 py-4 text-left font-bold not-italic">Price</th>
                   <th className="px-3 py-4 text-left font-bold not-italic">Status</th>
                   <th className="px-3 py-4 text-left font-bold not-italic">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredInventory.map((item) => (
-                  <tr key={item.id} className="border-b border-purple-200 hover:bg-purple-50 transition-colors">
-                    <td className="px-3 py-4 font-normal not-italic text-purple-900">{item.product}</td>
-                    <td className="px-3 py-4 font-normal not-italic text-purple-600 font-mono">{item.sku}</td>
-                    <td className="px-3 py-4 font-normal not-italic text-purple-900">{item.current}</td>
-                    <td className="px-3 py-4 font-normal not-italic text-purple-900">{item.minimum}</td>
-                    <td className="px-3 py-4 font-normal not-italic text-purple-900">{item.reorder}</td>
-                    <td className="px-3 py-4 font-normal not-italic">
-                      <span className={`px-3 py-1 rounded-full text-sm font-normal not-italic white-space-nowrap ${item.current < item.minimum ? 'bg-pink-100 text-pink-700' : 'bg-green-100 text-green-700'}`}>{item.current < item.minimum ? 'Low Stock' : 'OK'}</span>
-                    </td>
-                    <td className="px-3 py-4 font-normal not-italic">
-                      <button className="text-red-600 font-bold hover:underline">Delete</button>
-                    </td>
-                  </tr>
-                ))}
+                {filteredInventory.map((item) => {
+                  const stock = item.stock?.quantity || item.stock || 0;
+                  const minimum = item.minimumStock || 10;
+                  const isLowStock = stock < minimum;
+                  
+                  return (
+                    <tr key={item._id || item.id} className="border-b border-purple-200 hover:bg-purple-50 transition-colors">
+                      <td className="px-3 py-4 font-normal not-italic text-purple-900">{item.name}</td>
+                      <td className="px-3 py-4 font-normal not-italic text-purple-600 font-mono">{item.sku || 'N/A'}</td>
+                      <td className="px-3 py-4 font-normal not-italic text-purple-900">{stock}</td>
+                      <td className="px-3 py-4 font-normal not-italic text-purple-900">{minimum}</td>
+                      <td className="px-3 py-4 font-normal not-italic text-purple-900">₹{item.price}</td>
+                      <td className="px-3 py-4 font-normal not-italic">
+                        <span className={`px-3 py-1 rounded-full text-sm font-normal not-italic whitespace-nowrap ${isLowStock ? 'bg-pink-100 text-pink-700' : 'bg-green-100 text-green-700'}`}>
+                          {isLowStock ? 'Low Stock' : 'OK'}
+                        </span>
+                      </td>
+                      <td className="px-3 py-4 font-normal not-italic">
+                        <button 
+                          className="text-purple-600 font-bold hover:underline"
+                          onClick={() => handleStockUpdate(item)}
+                        >
+                          Update
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
+        </div>
         </div>
       </div>
     </AdminLayout>

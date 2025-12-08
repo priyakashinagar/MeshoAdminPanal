@@ -1,114 +1,172 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AdminLayout from '../components/layout/AdminLayout';
 import Card from '../components/common/Card';
 import Button from '../components/common/Button';
-
-
-const initialOrders = [
-  { id: 'ORD-001', customer: 'John Doe', date: '2024-11-10', amount: '$499.99', status: 'Completed' },
-  { id: 'ORD-002', customer: 'Jane Smith', date: '2024-11-12', amount: '$249.50', status: 'Pending' },
-  { id: 'ORD-003', customer: 'Mike Johnson', date: '2024-11-13', amount: '$1,299.99', status: 'Shipped', items: 5 },
-  { id: 'ORD-004', customer: 'Sarah Williams', date: '2024-11-14', amount: '$89.99', status: 'Processing', items: 1 },
-  { id: 'ORD-005', customer: 'Robert Brown', date: '2024-11-15', amount: '$599.00', status: 'Completed', items: 4 },
-];
+import adminService from '../services/adminService';
 
 const Orders = () => {
-  const [orders, setOrders] = useState(initialOrders);
-  const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({ customer: '', date: '', amount: '', status: '' });
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [search, setSearch] = useState('');
+  const [detailOrder, setDetailOrder] = useState(null);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      const response = await adminService.getAllOrders();
+      const ordersData = response.data?.orders || response.orders || [];
+      setOrders(ordersData);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to fetch orders');
+      console.error('Error fetching orders:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setOrders([...orders, { id: `ORD-${orders.length + 1}`, ...formData }]);
-    setShowForm(false);
-    setFormData({ customer: '', date: '', amount: '', status: '' });
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-IN', {
+      year: 'numeric', month: 'short', day: 'numeric'
+    });
   };
-    // ...existing code...
-  const handleDelete = (id) => {
-    setOrders(orders.filter(o => o.id !== id));
+
+  const getStatusColor = (status) => {
+    const colors = {
+      'delivered': 'bg-green-100 text-green-700',
+      'shipped': 'bg-blue-100 text-blue-700',
+      'processing': 'bg-purple-100 text-purple-700',
+      'confirmed': 'bg-cyan-100 text-cyan-700',
+      'pending': 'bg-yellow-100 text-yellow-700',
+      'cancelled': 'bg-red-100 text-red-700'
+    };
+    return colors[status?.toLowerCase()] || 'bg-gray-100 text-gray-700';
   };
+
+  const filteredOrders = orders.filter(order => {
+    const orderId = order.orderNumber || order._id || '';
+    const customerName = order.user?.name || '';
+    return orderId.toLowerCase().includes(search.toLowerCase()) ||
+           customerName.toLowerCase().includes(search.toLowerCase());
+  });
+
+  if (loading) {
+    return (
+      <AdminLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-purple-600 text-xl">Loading orders...</div>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>
-      <div className="space-y-8">
+      <div className="space-y-6">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <h1 className="text-3xl font-bold text-purple-900">Orders Management</h1>
-          <Button onClick={() => setShowForm(true)} className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">Add Order</Button>
+          <div className="flex items-center gap-2 bg-purple-100 rounded-full px-5 py-2 shadow w-full max-w-md">
+            <svg xmlns="http://www.w3.org/2000/svg" className="text-purple-600" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" /></svg>
+            <input
+              type="text"
+              placeholder="Search orders..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="border-0 bg-transparent text-purple-900 outline-none w-full text-lg placeholder-purple-400"
+            />
+          </div>
         </div>
-        {/* Table faded when modal is open */}
-        <div className={showForm ? "opacity-40 pointer-events-none blur-sm" : "opacity-100"}>
+
+        {error && (
+          <div className="w-full p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+            {error}
+          </div>
+        )}
+
+        {orders.length === 0 ? (
+          <Card className="border border-purple-200 shadow-lg p-8 bg-white text-center">
+            <p className="text-purple-600 text-lg">No orders found</p>
+          </Card>
+        ) : (
           <Card className="border border-purple-200 shadow-lg overflow-hidden bg-white">
             <div className="w-full overflow-x-auto">
               <table className="min-w-[600px] w-full">
-              <thead style={{ background: '#9E1CF0' }} className="text-white">
-                <tr>
-                  <th className="px-6 py-4 text-left font-semibold">Order ID</th>
-                  <th className="px-6 py-4 text-left font-semibold">Customer</th>
-                  <th className="px-6 py-4 text-left font-semibold">Date</th>
-                  <th className="px-6 py-4 text-left font-semibold">Amount</th>
-                  <th className="px-6 py-4 text-left font-semibold">Status</th>
-                  <th className="px-6 py-4 text-left font-semibold">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.map((order) => (
-                  <tr key={order.id} className="border-b border-purple-200 hover:bg-purple-50 transition-colors">
-                    <td className="px-6 py-4 font-bold text-purple-600">{order.id}</td>
-                    <td className="px-6 py-4">{order.customer}</td>
-                    <td className="px-6 py-4">{order.date}</td>
-                    <td className="px-6 py-4">{order.amount}</td>
-                    <td className="px-6 py-4">{order.status}</td>
-                    <td className="px-6 py-4 flex gap-2">
-                      <Button size="sm" onClick={() => handleDelete(order.id)} className="text-red-600 px-4 py-1 font-semibold">Delete</Button>
-                    </td>
+                <thead style={{ background: '#9E1CF0' }} className="text-white">
+                  <tr>
+                    <th className="px-4 py-4 text-left font-semibold">Order ID</th>
+                    <th className="px-4 py-4 text-left font-semibold">Customer</th>
+                    <th className="px-4 py-4 text-left font-semibold">Date</th>
+                    <th className="px-4 py-4 text-left font-semibold">Amount</th>
+                    <th className="px-4 py-4 text-left font-semibold">Status</th>
+                    <th className="px-4 py-4 text-left font-semibold">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filteredOrders.map((order) => (
+                    <tr key={order._id || order.orderNumber} className="border-b border-purple-200 hover:bg-purple-50 transition-colors">
+                      <td className="px-4 py-4 font-bold text-purple-600">{order.orderNumber || order._id?.slice(-8)}</td>
+                      <td className="px-4 py-4">{order.user?.name || 'N/A'}</td>
+                      <td className="px-4 py-4">{formatDate(order.createdAt)}</td>
+                      <td className="px-4 py-4 font-semibold">₹{(order.totalAmount || 0).toLocaleString()}</td>
+                      <td className="px-4 py-4">
+                        <span className={`px-3 py-1 rounded-full text-sm font-normal capitalize ${getStatusColor(order.status)}`}>
+                          {order.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4">
+                        <Button size="sm" onClick={() => setDetailOrder(order)} className="text-purple-600 px-4 py-1 font-semibold hover:bg-purple-100">
+                          View
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </Card>
-        </div>
-        {/* Modal Form with blurred background */}
-        {showForm && (
+        )}
+
+        {/* Detail Modal */}
+        {detailOrder && (
           <div className="fixed inset-0 flex items-center justify-center z-50" style={{ backdropFilter: 'blur(8px)' }}>
-            <div className="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-lg border border-purple-200 relative">
-              <form onSubmit={handleSubmit} className="space-y-7">
-                <div>
-                  <label className="block text-lg font-bold mb-2 text-purple-700">Customer</label>
-                  <input name="customer" value={formData.customer} onChange={handleChange} required
-                    className="w-full px-5 py-3 border border-purple-200 rounded-xl shadow-sm focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all outline-none bg-purple-50" />
-                </div>
-                <div>
-                  <label className="block text-lg font-bold mb-2 text-purple-700">Date</label>
-                  <input name="date" type="date" value={formData.date} onChange={handleChange} required
-                    className="w-full px-5 py-3 border border-purple-200 rounded-xl shadow-sm focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all outline-none bg-purple-50" />
-                </div>
-                <div>
-                  <label className="block text-lg font-bold mb-2 text-purple-700">Amount</label>
-                  <input name="amount" value={formData.amount} onChange={handleChange} required
-                    className="w-full px-5 py-3 border border-purple-200 rounded-xl shadow-sm focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all outline-none bg-purple-50" />
-                </div>
-                <div>
-                  <label className="block text-lg font-bold mb-2 text-purple-700">Status</label>
-                  <select name="status" value={formData.status} onChange={handleChange} required
-                    className="w-full px-5 py-3 border border-purple-200 rounded-xl shadow-sm focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all outline-none bg-purple-50">
-                    <option value="">Select status</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Shipped">Shipped</option>
-                    <option value="Processing">Processing</option>
-                  </select>
-                </div>
-                <div className="flex justify-end gap-4 mt-6">
-                  <Button type="button" onClick={() => setShowForm(false)} className="bg-gray-200 hover:bg-gray-300 px-7 py-2 font-semibold rounded-xl">Cancel</Button>
-                  <Button type="submit" className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-7 py-2 font-semibold rounded-xl shadow">Add Order</Button>
-                </div>
-              </form>
+            <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-lg border border-purple-200 relative max-h-[90vh] overflow-y-auto">
+              <button onClick={() => setDetailOrder(null)} className="absolute top-3 right-3 text-xl text-purple-600 font-bold">&times;</button>
+              <h2 className="text-2xl font-bold mb-4 text-purple-700">Order Details</h2>
+              <div className="space-y-3">
+                <div><span className="font-semibold">Order ID:</span> {detailOrder.orderNumber || detailOrder._id}</div>
+                <div><span className="font-semibold">Customer:</span> {detailOrder.user?.name || 'N/A'}</div>
+                <div><span className="font-semibold">Email:</span> {detailOrder.user?.email || 'N/A'}</div>
+                <div><span className="font-semibold">Date:</span> {formatDate(detailOrder.createdAt)}</div>
+                <div><span className="font-semibold">Status:</span> <span className={`px-2 py-1 rounded capitalize ${getStatusColor(detailOrder.status)}`}>{detailOrder.status}</span></div>
+                <div><span className="font-semibold">Total Amount:</span> ₹{(detailOrder.totalAmount || 0).toLocaleString()}</div>
+                <div><span className="font-semibold">Payment:</span> {detailOrder.paymentMethod || 'N/A'}</div>
+                {detailOrder.items && detailOrder.items.length > 0 && (
+                  <div>
+                    <span className="font-semibold">Items:</span>
+                    <ul className="mt-2 space-y-2">
+                      {detailOrder.items.map((item, idx) => (
+                        <li key={idx} className="bg-purple-50 p-2 rounded">
+                          {item.product?.name || 'Product'} x {item.quantity} - ₹{(item.price * item.quantity).toLocaleString()}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {detailOrder.shippingAddress && (
+                  <div>
+                    <span className="font-semibold">Shipping Address:</span>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {typeof detailOrder.shippingAddress === 'string' 
+                        ? detailOrder.shippingAddress 
+                        : `${detailOrder.shippingAddress.addressLine1}, ${detailOrder.shippingAddress.city}, ${detailOrder.shippingAddress.state} - ${detailOrder.shippingAddress.pincode}`}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}

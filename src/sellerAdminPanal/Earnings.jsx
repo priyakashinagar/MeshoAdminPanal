@@ -1,56 +1,123 @@
-import React from 'react';
-
-const dummyEarnings = [
-  { month: 'October', amount: 12000 },
-  { month: 'September', amount: 9500 },
-  { month: 'August', amount: 10200 },
-];
-
-const totalEarnings = dummyEarnings.reduce((sum, item) => sum + item.amount, 0);
+import React, { useState, useEffect } from 'react';
+import { TrendingUp, IndianRupee, Percent, Package } from 'lucide-react';
+import sellerService from '../services/sellerService';
 
 export default function Earnings() {
-  return (
-    <div className="p-2 sm:p-4 md:p-6 overflow-x-hidden flex flex-col gap-4 items-center w-full" style={{maxWidth: '1200px', margin: '0 auto'}}>
-      <h2 className="text-2xl font-bold mb-2">Earnings</h2>
-      <p className="text-purple-700 mb-4">Your total earnings for the last 3 months.</p>
-      <div className="flex flex-row items-center justify-between mb-6 gap-4 w-full">
-        <div className="flex items-center flex-grow">
-          <div className="flex items-center gap-2 bg-purple-100 dark:bg-purple-900 rounded-full px-5 py-2 shadow focus-within:ring-2 focus-within:ring-pink-400 w-full max-w-xl">
-            <svg xmlns="http://www.w3.org/2000/svg" className="text-purple-600 dark:text-purple-300" width="20" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" /></svg>
-            <input
-              type="text"
-              placeholder="Search Earnings..."
-              className="border-0 bg-transparent text-purple-900 dark:text-purple-50 outline-none w-full text-lg placeholder-purple-400"
-            />
-          </div>
-        </div>
-        <div
-          className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl shadow flex flex-row items-center justify-center h-12 min-w-[300px] px-8 gap-3"
-          style={{ height: '48px' }}
-        >
-          <span className="text-lg font-semibold">Total Earnings</span>
-          <span className="text-2xl font-bold">₹{totalEarnings.toLocaleString()}</span>
-        </div>
+  const [breakdown, setBreakdown] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [dateFilter, setDateFilter] = useState('all'); // all, today, week, month
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const breakdownRes = await sellerService.getEarningsBreakdown();
+      
+      console.log('📊 Breakdown Response:', breakdownRes);
+      
+      setBreakdown({
+        ...(breakdownRes.breakdown || breakdownRes),
+        orders: breakdownRes.orders || []
+      });
+      
+      console.log('✅ State updated - Breakdown:', breakdownRes.breakdown || breakdownRes);
+    } catch (err) {
+      setError(err.message || 'Failed to fetch earnings data');
+      console.error('❌ Error fetching earnings:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-purple-600 text-xl">Loading earnings...</div>
       </div>
-      <div className="bg-white rounded-lg shadow p-2 sm:p-4 md:p-6 border border-purple-100 w-full">
-        <div className="overflow-x-auto w-full" style={{ WebkitOverflowScrolling: 'touch' }}>
-          <table className="min-w-[350px] sm:min-w-[500px] md:min-w-[700px] w-full text-left max-w-full">
-            <thead className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-              <tr>
-                <th className="px-2 sm:px-4 py-2 sm:py-4 text-left">Month</th>
-                <th className="px-2 sm:px-4 py-2 sm:py-4 text-left">Amount (₹)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dummyEarnings.map((item, idx) => (
-                <tr key={idx} className="border-b border-purple-200 hover:bg-purple-50 transition-colors">
-                  <td className="px-2 sm:px-4 py-2 sm:py-4">{item.month}</td>
-                  <td className="px-2 sm:px-4 py-2 sm:py-4 font-bold text-purple-700">₹{item.amount.toLocaleString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+    );
+  }
+
+  return (
+    <div className="w-full">
+      <div className="p-4 md:p-6">
+        <h2 className="text-2xl font-bold mb-2 text-purple-900">Earnings & Payouts</h2>
+        <p className="text-purple-700 mb-6">Track your earnings, commissions, and payout status.</p>
+
+        {error && (
+          <div className="w-full p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg mb-4">
+            {error}
+          </div>
+        )}
+
+        {/* Summary Cards */}
+        {breakdown && (
+          <div className="bg-white rounded-lg shadow border border-purple-100 p-6 mb-6">
+            <h3 className="text-lg font-bold text-purple-900 mb-4">Earnings Breakdown</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div>
+                <p className="text-sm text-gray-600">Total Sales</p>
+                <p className="text-xl font-bold text-purple-700">₹{breakdown.totalSales?.toLocaleString()}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Platform Commission ({breakdown.averageCommissionPercent}%)</p>
+                <p className="text-xl font-bold text-red-600">-₹{breakdown.totalCommission?.toLocaleString()}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">GST (18% on commission)</p>
+                <p className="text-xl font-bold text-red-600">-₹{breakdown.totalTax?.toLocaleString()}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Shipping Charges</p>
+                <p className="text-xl font-bold text-red-600">-₹{breakdown.totalShipping?.toLocaleString()}</p>
+              </div>
+            </div>
+            <div className="border-t border-purple-200 mt-4 pt-4">
+              <div className="flex justify-between items-center">
+                <p className="text-lg font-semibold text-gray-700">Net Earnings</p>
+                <p className="text-2xl font-bold text-green-600">₹{breakdown.netEarnings?.toLocaleString()}</p>
+              </div>
+              <p className="text-sm text-gray-500 mt-1">From {breakdown.totalOrders} delivered orders</p>
+            </div>
+          </div>
+        )}
+
+        {breakdown && (
+          <div className="bg-white rounded-lg shadow border border-purple-100 overflow-hidden">
+            <div className="p-6">
+              <h3 className="text-lg font-bold text-purple-900 mb-4">Recent Orders (Delivered)</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full" style={{ minWidth: '800px' }}>
+                  <thead className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-sm font-semibold">Order ID</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold">Product Price</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold">Commission</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold">GST</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold">Shipping</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold">Net Earning</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {breakdown.orders?.slice(0, 10).map(order => (
+                      <tr key={order._id} className="border-b border-purple-100 hover:bg-purple-50">
+                        <td className="px-4 py-3 text-sm font-mono">#{order.orderId?.slice(-8)}</td>
+                        <td className="px-4 py-3 text-sm font-semibold">₹{order.pricing?.itemsTotal?.toLocaleString()}</td>
+                        <td className="px-4 py-3 text-sm text-red-600">-₹{order.earnings?.platformCommission?.toLocaleString()}</td>
+                        <td className="px-4 py-3 text-sm text-red-600">-₹{order.earnings?.totalTax?.toLocaleString()}</td>
+                        <td className="px-4 py-3 text-sm text-red-600">-₹{order.earnings?.shippingCharges?.toLocaleString()}</td>
+                        <td className="px-4 py-3 text-sm font-bold text-green-600">₹{order.earnings?.netSellerEarning?.toLocaleString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -188,8 +188,8 @@ const SellerLayout = ({ children }) => {
 
       {/* Sidebar - responsive */}
       <aside
-        className={`bg-gradient-to-b from-purple-300 to-purple-100 fixed top-0 left-0 h-full min-h-screen border-r border-purple-200 overflow-y-auto shadow-lg z-[100] transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:w-64 w-72`}
-        style={{ color: '#59168B' }}
+        className={`bg-gradient-to-b from-purple-300 to-purple-100 fixed top-0 left-0 h-full min-h-screen border-r border-purple-200 overflow-y-auto shadow-lg z-[100] transition-transform duration-300 scrollbar-hide ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:w-64 w-72`}
+        style={{ color: '#59168B', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {/* Close icon for mobile */}
         <div className="md:hidden flex justify-end p-4">
@@ -200,7 +200,7 @@ const SellerLayout = ({ children }) => {
         <div className="p-6 flex justify-between items-center border-b border-purple-500/30">
           <h1 className="text-2xl font-bold text-[#E639AC] truncate" title={storeName}>{storeName}</h1>
         </div>
-        <nav className="mt-8 space-y-2 px-3 pb-20 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
+        <nav className="mt-8 space-y-2 px-3 pb-20 overflow-y-auto scrollbar-hide" style={{ maxHeight: 'calc(100vh - 200px)', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {navItems.map((item, index) => {
             const hasSubmenu = item.submenu && item.submenu.length > 0;
             const isOpen = openSubmenu === item.label;

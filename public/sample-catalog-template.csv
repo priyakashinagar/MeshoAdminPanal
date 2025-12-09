@@ -1,0 +1,7 @@
+Product Name,Description,Category,Subcategory,Price,MRP,Stock,SKU,Brand,Color,Size,Weight,Images,Tags
+Cotton T-Shirt,Comfortable cotton t-shirt for daily wear,Clothing,Men's Wear,299,499,100,TSH-001,FashionHub,Blue,M,0.2,https://example.com/img1.jpg,cotton;casual;men
+Denim Jeans,Classic blue denim jeans,Clothing,Men's Wear,899,1499,50,JNS-001,Denim Co,Blue,32,0.5,https://example.com/img2.jpg,denim;jeans;casual
+Sports Shoes,Running shoes with cushioned sole,Footwear,Sports,1299,2199,75,SHO-001,SportsFit,Black,9,0.8,https://example.com/img3.jpg,sports;running;shoes
+Wireless Mouse,Ergonomic wireless mouse,Electronics,Computer Accessories,349,599,200,MOU-001,TechGear,Black,,0.1,https://example.com/img4.jpg,electronics;mouse;wireless
+Cotton Bedsheet,Double bed cotton bedsheet,Home & Living,Bedding,599,999,30,BED-001,HomeLinen,White,Queen,1.2,https://example.com/img5.jpg,bedsheet;cotton;home
+Water Bottle,Stainless steel insulated water bottle,Kitchen,Bottles,299,499,150,BOT-001,AquaLife,Silver,1L,0.3,https://example.com/img6.jpg,bottle;steel;kitchen

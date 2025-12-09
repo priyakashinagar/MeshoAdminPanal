@@ -70,7 +70,7 @@ export default function CatalogUploads() {
 
   const fetchStats = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/catalog/stats/${sellerId}`);
+      const response = await axios.get(`${API_URL.replace('/api/v1', '')}/api/catalog/stats/${sellerId}`);
       if (response.data.success) {
         setStats(response.data.data);
       }
@@ -81,7 +81,7 @@ export default function CatalogUploads() {
 
   const fetchCatalogs = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/catalog/${sellerId}`);
+      const response = await axios.get(`${API_URL.replace('/api/v1', '')}/api/catalog/${sellerId}`);
       if (response.data.success) {
         setCatalogs(response.data.data.catalogs);
       }
@@ -157,7 +157,7 @@ export default function CatalogUploads() {
       formData.append('file', file);
       formData.append('sellerId', sellerId);
 
-      const response = await axios.post(`http://localhost:5000/api/catalog/bulk-upload`, formData, {
+      const response = await axios.post(`${API_URL.replace('/api/v1', '')}/api/catalog/bulk-upload`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
@@ -196,7 +196,7 @@ export default function CatalogUploads() {
     setUploadStatus(null);
 
     try {
-      const response = await axios.post(`http://localhost:5000/api/catalog/single-upload`, {
+      const response = await axios.post(`${API_URL.replace('/api/v1', '')}/api/catalog/single-upload`, {
         sellerId,
         productData: singleProductData
       });
@@ -224,7 +224,7 @@ export default function CatalogUploads() {
     if (!confirm('Are you sure you want to delete this item?')) return;
 
     try {
-      const response = await axios.delete(`http://localhost:5000/api/catalog/item/${id}`);
+      const response = await axios.delete(`${API_URL.replace('/api/v1', '')}/api/catalog/item/${id}`);
       if (response.data.success) {
         fetchStats();
         fetchCatalogs();

@@ -28,7 +28,7 @@ export default function ImageBulkUpload() {
   const handleImageSelect = (e) => {
     const selectedFiles = Array.from(e.target.files);
     if (selectedFiles.length > 0) {
-      setImages(selectedFiles);
+      setImages([...images, ...selectedFiles]);
       setUploadStatus(null);
       setMessage('');
     }
@@ -72,12 +72,10 @@ export default function ImageBulkUpload() {
         setUploadStatus('success');
         setMessage(response.data.message || 'Images uploaded successfully!');
         setUploadedImages([...response.data.data.images, ...uploadedImages]);
-        setTimeout(() => {
-          setImages([]);
-          if (imageInputRef.current) {
-            imageInputRef.current.value = '';
-          }
-        }, 2000);
+        setImages([]);
+        if (imageInputRef.current) {
+          imageInputRef.current.value = '';
+        }
       }
     } catch (error) {
       setUploadStatus('error');

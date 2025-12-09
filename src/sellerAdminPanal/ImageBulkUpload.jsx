@@ -238,6 +238,10 @@ export default function ImageBulkUpload() {
                     src={img.url} 
                     alt={img.originalName} 
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.parentElement.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-purple-100"><svg class="w-12 h-12 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>';
+                    }}
                   />
                 </div>
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100">
@@ -250,7 +254,7 @@ export default function ImageBulkUpload() {
                     View
                   </a>
                 </div>
-                <p className="text-xs text-gray-600 mt-2 truncate">{img.originalName}</p>
+                <p className="text-xs text-gray-600 mt-2 truncate" title={img.originalName}>{img.originalName}</p>
                 <p className="text-xs text-gray-400">{(img.size / 1024).toFixed(1)} KB</p>
               </div>
             ))}

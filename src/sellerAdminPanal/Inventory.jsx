@@ -1,42 +1,60 @@
 import React, { useState, useEffect } from 'react';
-import { Package, AlertTriangle, Edit2, Search, TrendingDown, TrendingUp, Warehouse } from 'lucide-react';
+import { Package, AlertTriangle, Edit2, Search, TrendingDown, TrendingUp, Warehouse, Loader2 } from 'lucide-react';
 import inventoryService from '../services/inventoryService';
 
 export default function Inventory() {
   const [inventory, setInventory] = useState([]);
-  const [stats, setStats] = useState({ total: 0, inStock: 0, lowStock: 0, outOfStock: 0 });
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
   const [showModal, setShowModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [stockForm, setStockForm] = useState({ quantity: 0, type: 'addition', reason: '' });
+  const [stockForm, setStockForm] = useState({ 
+    quantity: 0, 
+    type: 'addition',
+    reason: ''
+  });
+  const [stats, setStats] = useState({
+    total: 0,
+    inStock: 0,
+    lowStock: 0,
+    outOfStock: 0,
+    totalValue: 0
+  });
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const getSellerId = () => {
-    try {
-      const user = JSON.parse(localStorage.getItem('user'));
-      return user?.sellerId || user?.seller?._id || user?._id;
-    } catch (error) {
-      return null;
-    }
-  };
-
   useEffect(() => {
     fetchInventory();
-  }, [statusFilter]);
+  }, []);
 
   const fetchInventory = async () => {
     try {
       setLoading(true);
-      const sellerId = getSellerId();
-      const response = await inventoryService.getAllInventory({ sellerId, status: statusFilter });
-      setInventory(response.data.inventory || []);
-      setStats(response.data.stats || {});
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const sellerId = user.sellerId || user.seller?._id || user._id;
+      
+      const response = await inventoryService.getAllInventory({ sellerId });
+      
+      if (response.success && response.data) {
+        // Data structure: response.data.inventory (array)
+        const inventoryData = Array.isArray(response.data.inventory) ? response.data.inventory : [];
+        const statsData = response.data.stats || {
+          total: 0,
+          inStock: 0,
+          lowStock: 0,
+          outOfStock: 0,
+          totalValue: 0
+        };
+        
+        setInventory(inventoryData);
+        setStats(statsData);
+      } else {
+        setInventory([]);
+      }
     } catch (err) {
       console.error('Error fetching inventory:', err);
-      setErrorMessage('Failed to fetch inventory');
+      setErrorMessage(err.response?.data?.message || 'Failed to fetch inventory');
+      setInventory([]);
     } finally {
       setLoading(false);
     }
@@ -44,7 +62,11 @@ export default function Inventory() {
 
   const handleStockUpdate = (item) => {
     setSelectedItem(item);
-    setStockForm({ quantity: 0, type: 'addition', reason: '' });
+    setStockForm({ 
+      quantity: 0,
+      type: 'addition',
+      reason: ''
+    });
     setShowModal(true);
   };
 
@@ -57,39 +79,40 @@ export default function Inventory() {
 
     try {
       await inventoryService.updateStock(selectedItem._id, {
-        quantity: Number(stockForm.quantity),
+        quantity: parseInt(stockForm.quantity),
         type: stockForm.type,
-        reason: stockForm.reason || 'Stock update'
+        reason: stockForm.reason
       });
       
       setSuccessMessage('Stock updated successfully!');
-      setTimeout(() => setSuccessMessage(''), 3000);
       setShowModal(false);
       fetchInventory();
-    } catch (error) {
-      setErrorMessage(error.response?.data?.message || 'Failed to update stock');
+      
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err) {
+      console.error('Error updating stock:', err);
+      setErrorMessage(err.response?.data?.message || 'Failed to update stock');
       setTimeout(() => setErrorMessage(''), 3000);
     }
   };
 
-  const filteredInventory = inventory.filter(item => {
+  const filteredInventory = Array.isArray(inventory) ? inventory.filter(item => {
     const productName = item.productId?.name || '';
-    return productName.toLowerCase().includes(search.toLowerCase());
-  });
-
-  const lowStockCount = stats.lowStock || 0;
-  const outOfStockCount = stats.outOfStock || 0;
+    const sku = item.sku || '';
+    return productName.toLowerCase().includes(search.toLowerCase()) ||
+           sku.toLowerCase().includes(search.toLowerCase());
+  }) : [];
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-purple-600 text-xl">Loading inventory...</div>
+      <div className="flex items-center justify-center h-96">
+        <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
       </div>
     );
   }
 
   return (
-    <div className="w-full  md:p-3">
+    <div className="w-full md:p-3">
       {/* Header */}
       <h2 className="text-2xl font-bold mb-2 text-purple-900">Inventory Management</h2>
       <p className="text-purple-700 mb-6">Monitor and manage your product stock levels.</p>
@@ -107,28 +130,40 @@ export default function Inventory() {
       )}
 
       {/* Low Stock Alert */}
-      {lowStockCount > 0 && (
+      {stats.lowStock > 0 && (
         <div className="mb-6 p-4 bg-orange-50 border-l-4 border-orange-500 rounded-lg flex items-start gap-3">
           <AlertTriangle className="text-orange-500 mt-1" size={24} />
           <div>
             <h3 className="font-bold text-orange-800">Low Stock Alert!</h3>
             <p className="text-orange-700">
-              {lowStockCount} product{lowStockCount > 1 ? 's' : ''} running low on stock. Please restock soon.
+              {stats.lowStock} item{stats.lowStock > 1 ? 's' : ''} running low on stock. Please restock soon.
             </p>
           </div>
         </div>
       )}
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div className="bg-white p-4 rounded-xl shadow border border-purple-200">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-purple-600 font-medium">Total Items</p>
-              <h3 className="text-3xl font-bold text-purple-900 mt-1">{stats.total || 0}</h3>
+              <h3 className="text-3xl font-bold text-purple-900 mt-1">{stats.total}</h3>
             </div>
             <div className="p-3 bg-purple-100 rounded-lg">
               <Package className="text-purple-600" size={24} />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-4 rounded-xl shadow border border-green-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-green-600 font-medium">In Stock</p>
+              <h3 className="text-3xl font-bold text-green-900 mt-1">{stats.inStock}</h3>
+            </div>
+            <div className="p-3 bg-green-100 rounded-lg">
+              <TrendingUp className="text-green-600" size={24} />
             </div>
           </div>
         </div>
@@ -137,7 +172,7 @@ export default function Inventory() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-orange-600 font-medium">Low Stock</p>
-              <h3 className="text-3xl font-bold text-orange-900 mt-1">{lowStockCount}</h3>
+              <h3 className="text-3xl font-bold text-orange-900 mt-1">{stats.lowStock}</h3>
             </div>
             <div className="p-3 bg-orange-100 rounded-lg">
               <AlertTriangle className="text-orange-600" size={24} />
@@ -149,10 +184,10 @@ export default function Inventory() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-red-600 font-medium">Out of Stock</p>
-              <h3 className="text-3xl font-bold text-red-900 mt-1">{outOfStockCount}</h3>
+              <h3 className="text-3xl font-bold text-red-900 mt-1">{stats.outOfStock}</h3>
             </div>
             <div className="p-3 bg-red-100 rounded-lg">
-              <Package className="text-red-600" size={24} />
+              <TrendingDown className="text-red-600" size={24} />
             </div>
           </div>
         </div>
@@ -164,7 +199,7 @@ export default function Inventory() {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400" size={20} />
           <input
             type="text"
-            placeholder="Search products..."
+            placeholder="Search by product name or SKU..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-3 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
@@ -172,59 +207,68 @@ export default function Inventory() {
         </div>
       </div>
 
-      {/* Products Table */}
+      {/* Inventory Table */}
       <div className="bg-white rounded-xl shadow overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
               <tr>
                 <th className="px-4 py-4 text-left">Product</th>
-                <th className="px-4 py-4 text-left">Current Stock</th>
-                <th className="px-4 py-4 text-left">Low Stock Alert</th>
+                <th className="px-4 py-4 text-left">SKU</th>
+                <th className="px-4 py-4 text-left">Available Stock</th>
+                <th className="px-4 py-4 text-left">Reserved</th>
+                <th className="px-4 py-4 text-left">Total Stock</th>
                 <th className="px-4 py-4 text-left">Status</th>
                 <th className="px-4 py-4 text-left">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filteredInventory.map((item) => {
-                const stock = item.totalStock || 0;
-                const threshold = item.lowStockThreshold || 10;
-                const isLowStock = stock < threshold && stock > 0;
-                const isOutOfStock = stock === 0;
-                const product = item.productId || {};
-
-                return (
+              {filteredInventory.length === 0 ? (
+                <tr>
+                  <td colSpan="7" className="px-4 py-8 text-center text-gray-500">
+                    No inventory items found
+                  </td>
+                </tr>
+              ) : (
+                filteredInventory.map((item) => (
                   <tr key={item._id} className="border-b border-purple-100 hover:bg-purple-50">
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-3">
-                        {product.images?.[0] && (
+                        {item.productId?.images?.[0]?.url && (
                           <img 
-                            src={product.images[0]} 
-                            alt={product.name}
+                            src={item.productId.images[0].url} 
+                            alt={item.productId.name}
                             className="w-12 h-12 object-cover rounded-lg"
                           />
                         )}
                         <div>
-                          <p className="font-medium text-purple-900">{product.name || 'Unknown Product'}</p>
-                          <p className="text-sm text-purple-600">₹{product.price || 'N/A'}</p>
-                          {item.sku && (
-                            <p className="text-xs text-purple-500">SKU: {item.sku}</p>
+                          <p className="font-medium text-purple-900">{item.productId?.name || 'Unknown Product'}</p>
+                          {item.variant?.size && (
+                            <p className="text-sm text-purple-600">
+                              {item.variant.size} - {item.variant.color}
+                            </p>
                           )}
                         </div>
                       </div>
                     </td>
                     <td className="px-4 py-4">
-                      <span className="font-bold text-purple-900">{stock}</span>
+                      <span className="text-sm font-mono bg-gray-100 px-2 py-1 rounded">{item.sku}</span>
                     </td>
                     <td className="px-4 py-4">
-                      <span className="text-purple-700">{threshold} units</span>
+                      <span className="font-bold text-purple-900">{item.stock?.available || 0}</span>
                     </td>
                     <td className="px-4 py-4">
-                      {isOutOfStock ? (
+                      <span className="text-orange-600">{item.stock?.reserved || 0}</span>
+                    </td>
+                    <td className="px-4 py-4">
+                      <span className="text-purple-700">{item.stock?.total || 0}</span>
+                    </td>
+                    <td className="px-4 py-4">
+                      {item.status === 'out-of-stock' ? (
                         <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium">
                           Out of Stock
                         </span>
-                      ) : isLowStock ? (
+                      ) : item.status === 'low-stock' ? (
                         <span className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-medium flex items-center gap-1 w-fit">
                           <AlertTriangle size={14} />
                           Low Stock
@@ -245,44 +289,40 @@ export default function Inventory() {
                       </button>
                     </td>
                   </tr>
-                );
-              })}
+                ))
+              )}
             </tbody>
           </table>
         </div>
       </div>
 
       {/* Update Stock Modal */}
-      {showModal && (
+      {showModal && selectedItem && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl">
             <h3 className="text-xl font-bold mb-4 text-purple-900">Update Stock</h3>
             <p className="text-purple-700 mb-4">
-              Product: <strong>{selectedItem?.productId?.name || 'Unknown'}</strong>
+              Product: <strong>{selectedItem.productId?.name || 'Unknown'}</strong><br/>
+              SKU: <strong className="font-mono">{selectedItem.sku}</strong><br/>
+              Current Available: <strong>{selectedItem.stock?.available || 0}</strong>
             </p>
-            {selectedItem?.variants && (
-              <p className="text-purple-600 text-sm mb-4">
-                SKU: {selectedItem.sku || 'N/A'}
-              </p>
-            )}
             
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-purple-700 font-medium mb-2">
-                  Stock Operation Type
+                  Stock Update Type
                 </label>
                 <select
-                  name="type"
                   value={stockForm.type}
                   onChange={(e) => setStockForm({ ...stockForm, type: e.target.value })}
                   className="w-full px-4 py-2 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   required
                 >
                   <option value="addition">Addition (Add Stock)</option>
-                  <option value="sale">Sale (Remove Stock)</option>
-                  <option value="return">Return (Add Stock)</option>
-                  <option value="damage">Damage (Remove Stock)</option>
-                  <option value="adjustment">Adjustment</option>
+                  <option value="sale">Sale (Reduce Stock)</option>
+                  <option value="return">Return (Add Back)</option>
+                  <option value="damage">Damage (Move to Damaged)</option>
+                  <option value="adjustment">Adjustment (Set Exact)</option>
                 </select>
               </div>
 
@@ -292,29 +332,27 @@ export default function Inventory() {
                 </label>
                 <input
                   type="number"
-                  name="quantity"
                   value={stockForm.quantity}
                   onChange={(e) => setStockForm({ ...stockForm, quantity: e.target.value })}
                   className="w-full px-4 py-2 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  min="1"
+                  min="0"
                   required
                 />
                 <p className="text-sm text-purple-600 mt-1">
-                  Current Stock: <strong>{selectedItem?.totalStock || 0}</strong> units
+                  {stockForm.type === 'adjustment' ? 'Set exact stock quantity' : 'Enter quantity to add/remove'}
                 </p>
               </div>
 
               <div>
                 <label className="block text-purple-700 font-medium mb-2">
-                  Reason (Optional)
+                  Reason
                 </label>
-                <textarea
-                  name="reason"
+                <input
+                  type="text"
                   value={stockForm.reason}
                   onChange={(e) => setStockForm({ ...stockForm, reason: e.target.value })}
                   className="w-full px-4 py-2 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  rows="2"
-                  placeholder="Enter reason for stock update..."
+                  placeholder="Enter reason for stock update"
                 />
               </div>
 

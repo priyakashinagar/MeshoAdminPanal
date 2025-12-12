@@ -16,14 +16,19 @@ const Customers = () => {
     try {
       setLoading(true);
       setError(null);
+      console.log('👥 Fetching customers...');
       const response = await adminService.getCustomers({ page, limit: 12, search: searchTerm });
-      if (response.success) {
-        setCustomers(response.data.customers);
-        setPagination(response.data.pagination);
+      console.log('👥 Customers Response:', response);
+      if (response.success || response.data) {
+        const customersData = response.data?.users || response.data?.customers || [];
+        const paginationData = response.data?.pagination || { page: 1, pages: 1, total: customersData.length };
+        console.log('👥 Customers Data:', customersData);
+        setCustomers(customersData);
+        setPagination(paginationData);
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch customers');
-      console.error('Error fetching customers:', err);
+      console.error('❌ Error fetching customers:', err);
     } finally {
       setLoading(false);
     }

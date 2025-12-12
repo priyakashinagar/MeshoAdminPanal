@@ -22,15 +22,20 @@ const Earnings = () => {
       console.log('📊 Admin Earnings Response:', response);
       if (response.success || response.data) {
         const data = response.data || response;
+        console.log('📊 Data object:', data);
+        console.log('📊 Monthly Earnings:', data.monthlyEarnings);
+        console.log('📊 First month item:', data.monthlyEarnings?.[0]);
         setEarnings(data.monthlyEarnings || []);
         setTotalEarnings(data.totalAdminEarnings || data.totalCommission || 0);
         setTotalOrders(data.totalOrders || 0);
         setAnalytics(data.analytics || null);
         setTopSellers(data.topSellers || []);
+        console.log('📊 State set - Earnings count:', data.monthlyEarnings?.length);
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch earnings');
-      console.error('Error fetching earnings:', err);
+      console.error('❌ Error fetching earnings:', err);
+      console.error('❌ Error response:', err.response?.data);
     } finally {
       setLoading(false);
     }
@@ -239,17 +244,17 @@ const Earnings = () => {
                     <tr key={idx} className="border-b border-purple-200 hover:bg-purple-50 transition-colors">
                       <td className="px-6 py-4 font-medium text-purple-900">{item.month}</td>
                       <td className="px-6 py-4 text-purple-700">{item.orders}</td>
-                      <td className="px-6 py-4 text-purple-700 flex items-center">
-                        <IndianRupee size={14} />{item.sales?.toLocaleString() || 0}
+                      <td className="px-6 py-4 text-purple-700">
+                        ₹{item.sales?.toLocaleString() || 0}
                       </td>
-                      <td className="px-6 py-4 font-semibold text-orange-600 flex items-center">
-                        <IndianRupee size={14} />{item.commission?.toLocaleString() || 0}
+                      <td className="px-6 py-4 font-semibold text-orange-600">
+                        ₹{item.commission?.toLocaleString() || 0}
                       </td>
-                      <td className="px-6 py-4 font-semibold text-blue-600 flex items-center">
-                        <IndianRupee size={14} />{item.tax?.toLocaleString() || 0}
+                      <td className="px-6 py-4 font-semibold text-blue-600">
+                        ₹{item.tax?.toLocaleString() || 0}
                       </td>
-                      <td className="px-6 py-4 font-bold text-green-600 flex items-center">
-                        <IndianRupee size={16} />{item.adminEarnings?.toLocaleString() || 0}
+                      <td className="px-6 py-4 font-bold text-green-600">
+                        ₹{item.adminEarnings?.toLocaleString() || 0}
                       </td>
                     </tr>
                   ))

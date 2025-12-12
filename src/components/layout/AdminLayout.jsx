@@ -1,58 +1,105 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { Menu, X, LogOut, Moon, Sun, ChevronDown, Settings, User, BarChart3, Headphones, Cog, CreditCard, Truck, Layers, ShoppingCart, Users, Package } from 'lucide-react';
+import { Menu, X, LogOut, Moon, Sun, ChevronDown, Settings, User, BarChart3, Headphones, Cog, CreditCard, Truck, Layers, ShoppingCart, Users, Package, Store, FileText, Award, AlertCircle, TrendingUp, DollarSign, UserCheck, Shield } from 'lucide-react';
 import { logout } from '../../redux/slices/authSlice';
 
 const navItems = [
-  { href: '/', label: 'Dashboard', icon: BarChart3 },
+  { href: '/', label: 'Dashboard', icon: BarChart3, section: 'Overview' },
+  
+  // Sellers Management
+  {
+    label: 'Sellers',
+    icon: Store,
+    section: 'Manage Sellers',
+    submenu: [
+      { href: '/users', label: 'All Sellers', icon: Store },
+      { href: '/kyc', label: 'KYC Verification', icon: UserCheck },
+      { href: '/seller-management', label: 'Seller Management', icon: Shield },
+    ],
+  },
+  
+  // Catalog Management
   {
     label: 'Catalog',
     icon: Layers,
+    section: 'Manage Catalog',
     submenu: [
-      { href: '/products', label: 'Products', icon: Package },
+      { href: '/products', label: 'All Products', icon: Package },
       { href: '/categories', label: 'Categories', icon: Layers },
       { href: '/inventory', label: 'Inventory', icon: Layers },
     ],
   },
+  
+  // Orders Management
   {
     label: 'Orders',
     icon: ShoppingCart,
+    section: 'Manage Orders',
     submenu: [
-      { href: '/orders', label: 'Orders', icon: ShoppingCart },
+      { href: '/orders', label: 'All Orders', icon: ShoppingCart },
       { href: '/sales', label: 'Sales Reports', icon: BarChart3 },
+      { href: '/shipping', label: 'Shipping Management', icon: Package },
+      { href: '/delivery', label: 'Delivery Tracking', icon: Truck },
     ],
   },
+  
+  // Customers
   {
     label: 'Customers',
     icon: Users,
+    section: 'Manage Customers',
     submenu: [
-      { href: '/users', label: 'Users', icon: Users },
-      { href: '/reviews', label: 'Reviews & Ratings', icon: Headphones },
+      { href: '/customers', label: 'All Customers', icon: Users },
+      { href: '/reviews', label: 'Reviews & Ratings', icon: Award },
     ],
   },
+  
+  // Finance & Earnings
   {
-    label: 'Earnings',
-    icon: CreditCard,
+    label: 'Finance',
+    icon: DollarSign,
+    section: 'Finance',
     submenu: [
-      { href: '/earnings', label: 'Earnings', icon: CreditCard },
-      { href: '/payouts', label: 'Payouts', icon: CreditCard },
+      { href: '/earnings', label: 'Platform Earnings', icon: TrendingUp },
+      { href: '/payouts', label: 'Seller Payouts', icon: CreditCard },
+      { href: '/operations/payment', label: 'Payment Transactions', icon: CreditCard },
     ],
   },
+  
+  // Quality & Support
   {
-    label: 'Operations',
-    icon: Cog,
+    label: 'Quality & Support',
+    icon: Headphones,
+    section: 'Quality',
     submenu: [
-      { href: '/shipping', label: 'Shipping', icon: Truck },
-      { href: '/operations/payment', label: 'Payments', icon: CreditCard },
+      { href: '/quality', label: 'Quality Metrics', icon: Award },
+      { href: '/support', label: 'Support Tickets', icon: Headphones },
+      { href: '/claims', label: 'Claims & Disputes', icon: AlertCircle },
     ],
   },
+  
+  // Reports & Analytics
+  {
+    label: 'Reports',
+    icon: FileText,
+    section: 'Analytics',
+    submenu: [
+      { href: '/analytics', label: 'Platform Analytics', icon: BarChart3 },
+      { href: '/sales-reports', label: 'Sales Reports', icon: TrendingUp },
+      { href: '/performance', label: 'Performance Metrics', icon: Award },
+    ],
+  },
+  
+  // Settings
   {
     label: 'Settings',
     icon: Settings,
+    section: 'Configuration',
     submenu: [
-      { href: '/settings', label: 'Store Settings', icon: Settings },
+      { href: '/settings', label: 'Platform Settings', icon: Settings },
       { href: '/settings/payment', label: 'Payment Gateway', icon: CreditCard },
+      { href: '/settings/shipping', label: 'Shipping Configuration', icon: Truck },
     ],
   },
 ];
@@ -141,8 +188,8 @@ const AdminLayout = ({ children }) => {
 
       {/* Sidebar - responsive */}
       <aside
-        className={`bg-gradient-to-b from-purple-300 to-purple-100 fixed top-0 left-0 h-full min-h-screen border-r border-purple-200 overflow-y-auto shadow-lg z-[100] transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:w-64 w-72`}
-        style={{ color: '#59168B' }}
+        className={`bg-gradient-to-b from-purple-300 to-purple-100 fixed top-0 left-0 h-full min-h-screen border-r border-purple-200 overflow-y-auto shadow-lg z-[100] transition-transform duration-300 scrollbar-hide ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:w-64 w-72`}
+        style={{ color: '#59168B', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {/* Close icon for mobile */}
         <div className="md:hidden flex justify-end p-4">
@@ -153,15 +200,24 @@ const AdminLayout = ({ children }) => {
         <div className="p-6 flex justify-between items-center border-b border-purple-500/30">
           <h1 className="text-2xl font-bold text-[#E639AC]">meesho</h1>
         </div>
-        <nav className="mt-8 space-y-2 px-3 pb-20 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
-          {navItems.map((item) => {
+        <nav className="mt-6 space-y-1 px-3 pb-20 overflow-y-auto scrollbar-hide" style={{ maxHeight: 'calc(100vh - 200px)', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+          {navItems.map((item, index) => {
             const Icon = item.icon;
             const hasSubmenu = item.submenu && item.submenu.length > 0;
             const isOpen = openSubmenu === item.label;
             const isItemActive = item.submenu ? item.submenu.some(s => isActive(s.href)) : isActive(item.href);
             const buttonClasses = isItemActive ? 'bg-gradient-to-r from-pink-500 to-purple-600 shadow-lg scale-105' : 'hover:bg-purple-700/50';
+            
+            // Check if we need to show a section heading
+            const showSectionHeading = item.section && (index === 0 || navItems[index - 1].section !== item.section);
+            
             return (
               <div key={item.label}>
+                {showSectionHeading && (
+                  <div className="text-xs font-semibold text-purple-700/60 uppercase tracking-wider px-4 pt-2 pb-0">
+                    {item.section}
+                  </div>
+                )}
                 <button
                   onClick={() => {
                     if (hasSubmenu) {
@@ -171,19 +227,19 @@ const AdminLayout = ({ children }) => {
                       if (window.innerWidth < 768) setSidebarOpen(false);
                     }
                   }}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${buttonClasses}`}
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-200 ${buttonClasses}`}
                 >
                   <Icon size={20} />
                   <span className="flex-1 text-left font-medium" style={{ color: '#59168B' }}>{item.label}</span>
                   {hasSubmenu && <ChevronDown size={16} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />}
                 </button>
                 {hasSubmenu && isOpen && (
-                  <div className="ml-4 mt-2 space-y-2 pl-4 border-l border-purple-500/30">
+                  <div className="ml-3 mt-1 space-y-1 pl-3 border-l border-purple-500/30">
                     {item.submenu?.map((sub) => (
                       <Link
                         key={sub.href}
                         to={sub.href || '#'}
-                        className={`flex items-center gap-3 px-4 py-2 rounded-lg text-sm transition-colors duration-200 ${isActive(sub.href) ? 'bg-purple-700/50 font-medium' : 'hover:bg-purple-700/30'}`}
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors duration-200 ${isActive(sub.href) ? 'bg-purple-700/50 font-medium' : 'hover:bg-purple-700/30'}`}
                         style={{ color: '#59168B' }}
                         onClick={() => { if (window.innerWidth < 768) setSidebarOpen(false); }}
                       >

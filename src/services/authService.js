@@ -35,18 +35,20 @@ const authService = {
       if (response.data.success) {
         const userData = response.data.data?.user;
         const token = response.data.data?.token;
+        const requiresOnboarding = response.data.data?.requiresOnboarding || false;
         
         // Store token and user data
         localStorage.setItem('authToken', token);
         localStorage.setItem('user', JSON.stringify(userData));
         localStorage.setItem('isAuthenticated', 'true');
         
-        console.log('✅ Direct login successful:', userData.phone);
+        console.log('✅ Direct login successful:', userData.phone, 'requiresOnboarding:', requiresOnboarding);
         
         return {
           success: true,
           token,
           user: userData,
+          requiresOnboarding
         };
       }
       

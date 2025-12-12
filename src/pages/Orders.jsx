@@ -18,12 +18,31 @@ const Orders = () => {
   const fetchOrders = async () => {
     try {
       setLoading(true);
+      console.log('📦 Fetching orders...');
       const response = await adminService.getAllOrders();
-      const ordersData = response.data?.orders || response.orders || [];
+      console.log('📦 Orders API Response:', response);
+      
+      // Extract orders from response - check multiple possible locations
+      let ordersData = [];
+      if (response.data?.data?.orders) {
+        ordersData = response.data.data.orders;
+      } else if (response.data?.orders) {
+        ordersData = response.data.orders;
+      } else if (response.orders) {
+        ordersData = response.orders;
+      } else if (Array.isArray(response.data)) {
+        ordersData = response.data;
+      } else if (Array.isArray(response)) {
+        ordersData = response;
+      }
+      
+      console.log('📦 Orders Data:', ordersData);
+      console.log('📦 Total Orders:', ordersData.length);
       setOrders(ordersData);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch orders');
-      console.error('Error fetching orders:', err);
+      console.error('❌ Error fetching orders:', err);
+      console.error('❌ Error response:', err.response?.data);
     } finally {
       setLoading(false);
     }
@@ -48,10 +67,12 @@ const Orders = () => {
   };
 
   const filteredOrders = orders.filter(order => {
-    const orderId = order.orderNumber || order._id || '';
+    const orderId = order.orderId || order.orderNumber || order._id || '';
     const customerName = order.user?.name || '';
+    const customerEmail = order.user?.email || '';
     return orderId.toLowerCase().includes(search.toLowerCase()) ||
-           customerName.toLowerCase().includes(search.toLowerCase());
+           customerName.toLowerCase().includes(search.toLowerCase()) ||
+           customerEmail.toLowerCase().includes(search.toLowerCase());
   });
 
   if (loading) {
@@ -107,11 +128,11 @@ const Orders = () => {
                 </thead>
                 <tbody>
                   {filteredOrders.map((order) => (
-                    <tr key={order._id || order.orderNumber} className="border-b border-purple-200 hover:bg-purple-50 transition-colors">
-                      <td className="px-4 py-4 font-bold text-purple-600">{order.orderNumber || order._id?.slice(-8)}</td>
+                    <tr key={order._id || order.orderId} className="border-b border-purple-200 hover:bg-purple-50 transition-colors">
+                      <td className="px-4 py-4 font-bold text-purple-600">{order.orderId || order.orderNumber || order._id?.slice(-8)}</td>
                       <td className="px-4 py-4">{order.user?.name || 'N/A'}</td>
-                      <td className="px-4 py-4">{formatDate(order.createdAt)}</td>
-                      <td className="px-4 py-4 font-semibold">₹{(order.totalAmount || 0).toLocaleString()}</td>
+                      <td className="px-4 py-4">{formatDate(order.createdAt || order.placedAt)}</td>
+                      <td className="px-4 py-4 font-semibold">₹{((order.pricing?.total || order.totalAmount || 0)).toLocaleString('en-IN')}</td>
                       <td className="px-4 py-4">
                         <span className={`px-3 py-1 rounded-full text-sm font-normal capitalize ${getStatusColor(order.status)}`}>
                           {order.status}
@@ -137,13 +158,24 @@ const Orders = () => {
               <button onClick={() => setDetailOrder(null)} className="absolute top-3 right-3 text-xl text-purple-600 font-bold">&times;</button>
               <h2 className="text-2xl font-bold mb-4 text-purple-700">Order Details</h2>
               <div className="space-y-3">
-                <div><span className="font-semibold">Order ID:</span> {detailOrder.orderNumber || detailOrder._id}</div>
+                <div><span className="font-semibold">Order ID:</span> {detailOrder.orderId || detailOrder.orderNumber || detailOrder._id}</div>
                 <div><span className="font-semibold">Customer:</span> {detailOrder.user?.name || 'N/A'}</div>
                 <div><span className="font-semibold">Email:</span> {detailOrder.user?.email || 'N/A'}</div>
-                <div><span className="font-semibold">Date:</span> {formatDate(detailOrder.createdAt)}</div>
+                <div><span className="font-semibold">Phone:</span> {detailOrder.shippingAddress?.phone || 'N/A'}</div>
+                <div><span className="font-semibold">Date:</span> {formatDate(detailOrder.createdAt || detailOrder.placedAt)}</div>
                 <div><span className="font-semibold">Status:</span> <span className={`px-2 py-1 rounded capitalize ${getStatusColor(detailOrder.status)}`}>{detailOrder.status}</span></div>
-                <div><span className="font-semibold">Total Amount:</span> ₹{(detailOrder.totalAmount || 0).toLocaleString()}</div>
-                <div><span className="font-semibold">Payment:</span> {detailOrder.paymentMethod || 'N/A'}</div>
+                <div><span className="font-semibold">Total Amount:</span> ₹{((detailOrder.pricing?.total || detailOrder.totalAmount || 0)).toLocaleString('en-IN')}</div>
+                <div><span className="font-semibold">Payment:</span> {detailOrder.payment?.method || detailOrder.paymentMethod || 'N/A'}</div>
+                {detailOrder.shippingAddress && (
+                  <div>
+                    <span className="font-semibold">Shipping Address:</span>
+                    <div className="mt-1 text-sm text-gray-600">
+                      {detailOrder.shippingAddress.fullName}<br/>
+                      {detailOrder.shippingAddress.addressLine1}<br/>
+                      {detailOrder.shippingAddress.city}, {detailOrder.shippingAddress.state} - {detailOrder.shippingAddress.pincode}
+                    </div>
+                  </div>
+                )}
                 {detailOrder.items && detailOrder.items.length > 0 && (
                   <div>
                     <span className="font-semibold">Items:</span>

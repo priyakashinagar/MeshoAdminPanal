@@ -213,13 +213,13 @@ export default function Inventory() {
           <table className="w-full">
             <thead className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
               <tr>
-                <th className="px-4 py-4 text-left">Product</th>
-                <th className="px-4 py-4 text-left">SKU</th>
-                <th className="px-4 py-4 text-left">Available Stock</th>
-                <th className="px-4 py-4 text-left">Reserved</th>
-                <th className="px-4 py-4 text-left">Total Stock</th>
-                <th className="px-4 py-4 text-left">Status</th>
-                <th className="px-4 py-4 text-left">Actions</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">Product</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">SKU</th>
+                <th className="px-4 py-3 text-center text-sm font-semibold">Available</th>
+                <th className="px-4 py-3 text-center text-sm font-semibold">Reserved</th>
+                <th className="px-4 py-3 text-center text-sm font-semibold">Total</th>
+                <th className="px-4 py-3 text-center text-sm font-semibold">Status</th>
+                <th className="px-4 py-3 text-center text-sm font-semibold">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -232,60 +232,60 @@ export default function Inventory() {
               ) : (
                 filteredInventory.map((item) => (
                   <tr key={item._id} className="border-b border-purple-100 hover:bg-purple-50">
-                    <td className="px-4 py-4">
-                      <div className="flex items-center gap-3">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
                         {item.productId?.images?.[0]?.url && (
                           <img 
                             src={item.productId.images[0].url} 
                             alt={item.productId.name}
-                            className="w-12 h-12 object-cover rounded-lg"
+                            className="w-10 h-10 object-cover rounded-lg flex-shrink-0"
                           />
                         )}
-                        <div>
-                          <p className="font-medium text-purple-900">{item.productId?.name || 'Unknown Product'}</p>
+                        <div className="min-w-0">
+                          <p className="font-medium text-purple-900 text-sm truncate">{item.productId?.name || 'Unknown Product'}</p>
                           {item.variant?.size && (
-                            <p className="text-sm text-purple-600">
+                            <p className="text-xs text-purple-600 truncate">
                               {item.variant.size} - {item.variant.color}
                             </p>
                           )}
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-4">
-                      <span className="text-sm font-mono bg-gray-100 px-2 py-1 rounded">{item.sku}</span>
+                    <td className="px-4 py-3">
+                      <span className="text-xs font-mono bg-gray-100 px-2 py-1 rounded whitespace-nowrap">{item.sku}</span>
                     </td>
-                    <td className="px-4 py-4">
-                      <span className="font-bold text-purple-900">{item.stock?.available || 0}</span>
+                    <td className="px-4 py-3 text-center">
+                      <span className="font-bold text-purple-900 text-sm">{item.stock?.available || 0}</span>
                     </td>
-                    <td className="px-4 py-4">
-                      <span className="text-orange-600">{item.stock?.reserved || 0}</span>
+                    <td className="px-4 py-3 text-center">
+                      <span className="text-orange-600 text-sm">{item.stock?.reserved || 0}</span>
                     </td>
-                    <td className="px-4 py-4">
-                      <span className="text-purple-700">{item.stock?.total || 0}</span>
+                    <td className="px-4 py-3 text-center">
+                      <span className="text-purple-700 text-sm">{item.stock?.total || 0}</span>
                     </td>
-                    <td className="px-4 py-4">
+                    <td className="px-4 py-3 text-center">
                       {item.status === 'out-of-stock' ? (
-                        <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium">
+                        <span className="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium inline-block whitespace-nowrap">
                           Out of Stock
                         </span>
                       ) : item.status === 'low-stock' ? (
-                        <span className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-medium flex items-center gap-1 w-fit">
-                          <AlertTriangle size={14} />
+                        <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-medium inline-flex items-center gap-1 whitespace-nowrap">
+                          <AlertTriangle size={12} />
                           Low Stock
                         </span>
                       ) : (
-                        <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+                        <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium inline-block whitespace-nowrap">
                           In Stock
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-4">
+                    <td className="px-4 py-3 text-center">
                       <button
                         onClick={() => handleStockUpdate(item)}
-                        className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-xs font-medium whitespace-nowrap"
                       >
-                        <Edit2 size={16} />
-                        Update Stock
+                        <Edit2 size={14} />
+                        Update
                       </button>
                     </td>
                   </tr>

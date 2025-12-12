@@ -40,7 +40,11 @@ const Dashboard = () => {
   };
 
   const formatCurrency = (amount) => {
-    return `₹${(amount || 0).toLocaleString()}`;
+    return `₹${(amount || 0).toLocaleString('en-IN')}`;
+  };
+
+  const formatNumber = (num) => {
+    return (num || 0).toLocaleString('en-IN');
   };
 
   const getStatusColor = (status) => {
@@ -56,9 +60,9 @@ const Dashboard = () => {
 
   const statsCards = [
     { label: 'Total Revenue', value: formatCurrency(stats.totalRevenue), icon: DollarSign, color: 'purple' },
-    { label: 'Total Orders', value: stats.totalOrders?.toLocaleString() || '0', icon: ShoppingCart, color: 'pink' },
-    { label: 'Products', value: stats.totalProducts?.toLocaleString() || '0', icon: Package, color: 'purple' },
-    { label: 'Customers', value: stats.totalUsers?.toLocaleString() || '0', icon: Users, color: 'pink' },
+    { label: 'Total Orders', value: formatNumber(stats.totalOrders), icon: ShoppingCart, color: 'pink' },
+    { label: 'Products', value: formatNumber(stats.totalProducts), icon: Package, color: 'purple' },
+    { label: 'Customers', value: formatNumber(stats.totalUsers), icon: Users, color: 'pink' },
   ];
 
   if (loading) {

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import Card from '../components/common/Card';
 import { Loader2, CheckCircle, AlertCircle, MessageSquare, Phone, Mail, HelpCircle } from 'lucide-react';
-import adminService from '../services/adminService';
+import supportService from '../services/supportService';
 
 const faqs = [
   { q: 'How do I add a new product?', a: 'Go to Add Product page, fill in the product details including name, price, description, and images, then click Submit.' },
@@ -43,7 +43,18 @@ export default function Support() {
     try {
       setSubmitting(true);
       setError('');
-      await adminService.submitSupportTicket(form);
+      
+      // Get seller info from localStorage
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const sellerId = user.sellerId || user.seller?._id || user._id;
+      
+      // Create ticket with seller info
+      await supportService.createTicket({
+        ...form,
+        sellerId,
+        description: form.message
+      });
+      
       setSuccess('Your support ticket has been submitted successfully! We\'ll get back to you soon.');
       setForm({ name: '', email: '', subject: '', category: 'general', priority: 'medium', message: '' });
     } catch (err) {

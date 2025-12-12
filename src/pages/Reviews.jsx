@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../components/layout/AdminLayout';
-import { Star, User, Trash2, Loader2, AlertCircle, Package } from 'lucide-react';
 import adminService from '../services/adminService';
+import { Star, User, Trash2, Loader2, AlertCircle, Package } from 'lucide-react';
 
 const Reviews = () => {
   const [reviews, setReviews] = useState([]);
@@ -17,20 +17,55 @@ const Reviews = () => {
     try {
       setLoading(true);
       setError(null);
+      console.log('⭐ Fetching reviews...');
       const response = await adminService.getReviews({ 
         page, 
         limit: 15, 
         search: searchTerm,
         rating: ratingFilter 
       });
-      if (response.success) {
-        setReviews(response.data.reviews);
-        setPagination(response.data.pagination);
-        setStats(response.data.stats);
+      console.log('⭐ Reviews Response:', response);
+      
+      // Handle multiple response structures
+      let reviewsData = [];
+      let paginationData = { page: 1, pages: 1, total: 0 };
+      let statsData = { averageRating: 0, totalReviews: 0, ratingDistribution: {} };
+      
+      if (response.success || response.data) {
+        // Try different response structures
+        reviewsData = response.data?.reviews || response.reviews || response.data || [];
+        paginationData = response.data?.pagination || response.pagination || { page: 1, pages: 1, total: reviewsData.length };
+        statsData = response.data?.stats || response.stats || { averageRating: 0, totalReviews: reviewsData.length, ratingDistribution: {} };
+        
+        // If reviewsData is an array, calculate stats from it
+        if (Array.isArray(reviewsData) && reviewsData.length > 0) {
+          const totalRating = reviewsData.reduce((sum, r) => sum + (r.rating || 0), 0);
+          const avgRating = totalRating / reviewsData.length;
+          const ratingDist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+          reviewsData.forEach(r => {
+            if (r.rating >= 1 && r.rating <= 5) {
+              ratingDist[r.rating] = (ratingDist[r.rating] || 0) + 1;
+            }
+          });
+          
+          statsData = {
+            averageRating: avgRating,
+            totalReviews: reviewsData.length,
+            ratingDistribution: ratingDist
+          };
+          
+          paginationData.total = reviewsData.length;
+        }
+        
+        setReviews(reviewsData);
+        setPagination(paginationData);
+        setStats(statsData);
+        console.log('⭐ Total Reviews:', reviewsData.length);
+        console.log('⭐ Stats:', statsData);
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch reviews');
-      console.error('Error fetching reviews:', err);
+      console.error('❌ Error fetching reviews:', err);
     } finally {
       setLoading(false);
     }

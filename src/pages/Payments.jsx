@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../components/layout/AdminLayout';
-import { CreditCard, Search, Loader2, AlertCircle, IndianRupee, CheckCircle, Clock, XCircle, RefreshCw } from 'lucide-react';
 import adminService from '../services/adminService';
+import { CreditCard, Search, Loader2, AlertCircle, IndianRupee, CheckCircle, Clock, XCircle, RefreshCw } from 'lucide-react';
 
 const Payments = () => {
   const [payments, setPayments] = useState([]);
@@ -16,20 +16,26 @@ const Payments = () => {
     try {
       setLoading(true);
       setError(null);
+      console.log('💳 Fetching payments...');
       const response = await adminService.getPayments({ 
         page, 
         limit: 15, 
         search: searchTerm,
         status: statusFilter 
       });
-      if (response.success) {
-        setPayments(response.data.payments);
-        setPagination(response.data.pagination);
-        setStats(response.data.stats);
+      console.log('💳 Payments Response:', response);
+      if (response.success || response.data) {
+        const paymentsData = response.data?.payments || [];
+        const paginationData = response.data?.pagination || { page: 1, pages: 1, total: 0 };
+        const statsData = response.data?.stats || { total: 0, completed: 0, pending: 0, failed: 0, refunded: 0 };
+        setPayments(paymentsData);
+        setPagination(paginationData);
+        setStats(statsData);
+        console.log('💳 Total Payments:', paymentsData.length);
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch payments');
-      console.error('Error fetching payments:', err);
+      console.error('❌ Error fetching payments:', err);
     } finally {
       setLoading(false);
     }

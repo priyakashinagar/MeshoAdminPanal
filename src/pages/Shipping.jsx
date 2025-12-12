@@ -20,20 +20,36 @@ const Shipping = () => {
     try {
       setLoading(true);
       setError(null);
+      console.log('🚢 Fetching shipments...');
       const response = await adminService.getShipments({ 
         page, 
         limit: 15, 
         search: searchTerm,
         status: statusFilter 
       });
-      if (response.success) {
-        setShipments(response.data.shipments);
-        setPagination(response.data.pagination);
-        setStats(response.data.stats);
+      console.log('🚢 Shipments Response:', response);
+      
+      // Handle multiple response structures
+      const shipmentsData = response.data?.shipments || response.shipments || response.data || response || [];
+      const paginationData = response.data?.pagination || response.pagination || { page: 1, pages: 1, total: 0 };
+      const statsData = response.data?.stats || response.stats || { pending: 0, shipped: 0, inTransit: 0, delivered: 0 };
+      
+      // Ensure shipments is an array
+      if (Array.isArray(shipmentsData)) {
+        setShipments(shipmentsData);
+        setPagination({ ...paginationData, total: paginationData.total || shipmentsData.length });
+        setStats(statsData);
+        console.log('🚢 Total Shipments:', shipmentsData.length);
+      } else {
+        console.warn('⚠️ Shipments data is not an array:', shipmentsData);
+        setShipments([]);
+        setPagination({ page: 1, pages: 1, total: 0 });
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch shipments');
-      console.error('Error fetching shipments:', err);
+      console.error('❌ Error fetching shipments:', err);
+      setError(err.response?.data?.message || err.message || 'Failed to fetch shipments');
+      setShipments([]);
+      setPagination({ page: 1, pages: 1, total: 0 });
     } finally {
       setLoading(false);
     }

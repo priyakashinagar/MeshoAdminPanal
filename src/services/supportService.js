@@ -1,30 +1,28 @@
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+import api from './api';
 
 const supportService = {
   getAllTickets: async (params = {}) => {
-    const response = await axios.get(`${API_URL}/support`, { params });
+    const response = await api.get('/support', { params });
     return response.data;
   },
 
   getTicketById: async (id) => {
-    const response = await axios.get(`${API_URL}/support/${id}`);
+    const response = await api.get(`/support/${id}`);
     return response.data;
   },
 
   createTicket: async (data) => {
-    const response = await axios.post(`${API_URL}/support`, data);
+    const response = await api.post('/support', data);
     return response.data;
   },
 
   addMessage: async (id, message, attachments = []) => {
-    const response = await axios.post(`${API_URL}/support/${id}/message`, { message, attachments });
+    const response = await api.post(`/support/${id}/message`, { message, attachments });
     return response.data;
   },
 
   updateTicketStatus: async (id, status) => {
-    const response = await axios.put(`${API_URL}/support/${id}/status`, { status });
+    const response = await api.put(`/support/${id}/status`, { status });
     return response.data;
   },
 };

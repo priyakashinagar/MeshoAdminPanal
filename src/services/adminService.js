@@ -151,6 +151,98 @@ const adminService = {
   submitSupportTicket: async (data) => {
     const response = await api.post('/admin/support', data);
     return response.data;
+  },
+
+  // Payouts (Admin view - all sellers)
+  getAllPendingPayouts: async (params = {}) => {
+    const response = await api.get('/admin/payouts/pending', { params });
+    return response.data;
+  },
+
+  getAllPayoutHistory: async (params = {}) => {
+    const response = await api.get('/admin/payouts/history', { params });
+    return response.data;
+  },
+
+  getAllWallets: async (params = {}) => {
+    const response = await api.get('/admin/wallet', { params });
+    return response.data;
+  },
+
+  // Customers (alias for getAllUsers with role filter)
+  getCustomers: async (params = {}) => {
+    const response = await api.get('/admin/users', { params: { ...params, role: 'user' } });
+    return response.data;
+  },
+
+  // Reviews
+  getReviews: async (params = {}) => {
+    const response = await api.get('/admin/reviews', { params });
+    return response.data;
+  },
+
+  deleteReview: async (reviewId) => {
+    const response = await api.delete(`/admin/reviews/${reviewId}`);
+    return response.data;
+  },
+
+  // Payments
+  getPayments: async (params = {}) => {
+    const response = await api.get('/admin/payments', { params });
+    return response.data;
+  },
+
+  // Claims & Disputes
+  getClaims: async (params = {}) => {
+    const response = await api.get('/claims', { params });
+    return response.data;
+  },
+
+  getClaimById: async (claimId) => {
+    const response = await api.get(`/claims/${claimId}`);
+    return response.data;
+  },
+
+  updateClaimStatus: async (claimId, status) => {
+    const response = await api.put(`/claims/${claimId}/status`, { status });
+    return response.data;
+  },
+
+  // Support Tickets
+  getTickets: async (params = {}) => {
+    const response = await api.get('/support', { params });
+    return response.data;
+  },
+
+  getTicketById: async (ticketId) => {
+    const response = await api.get(`/support/${ticketId}`);
+    return response.data;
+  },
+
+  updateTicketStatus: async (ticketId, status) => {
+    const response = await api.put(`/support/${ticketId}/status`, { status });
+    return response.data;
+  },
+
+  addTicketMessage: async (ticketId, message) => {
+    const response = await api.post(`/support/${ticketId}/message`, { message });
+    return response.data;
+  },
+
+  // Quality Metrics
+  getQualityMetrics: async (params = {}) => {
+    const response = await api.get('/quality', { params });
+    return response.data;
+  },
+
+  getQualityById: async (qualityId) => {
+    const response = await api.get(`/quality/${qualityId}`);
+    return response.data;
+  },
+
+  updateQualityMetrics: async (qualityId, data) => {
+    const response = await api.put(`/quality/${qualityId}`, data);
+    return response.data;
   }
 };
 

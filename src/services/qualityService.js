@@ -1,20 +1,25 @@
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+import api from './api';
 
 const qualityService = {
+  // Get all quality metrics for a seller
   getQualityMetrics: async (sellerId) => {
-    const response = await axios.get(`${API_URL}/quality`, { params: { sellerId } });
+    const response = await api.get('/quality', { params: { sellerId } });
+    return response.data;
+  },
+
+  // Alias for getQualityMetrics
+  getAllMetrics: async (sellerId) => {
+    const response = await api.get('/quality', { params: { sellerId } });
     return response.data;
   },
 
   getQualityById: async (id) => {
-    const response = await axios.get(`${API_URL}/quality/${id}`);
+    const response = await api.get(`/quality/${id}`);
     return response.data;
   },
 
   updateQualityMetrics: async (id, data) => {
-    const response = await axios.put(`${API_URL}/quality/${id}`, data);
+    const response = await api.put(`/quality/${id}`, data);
     return response.data;
   },
 };

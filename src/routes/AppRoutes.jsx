@@ -17,10 +17,18 @@ import NotFound from '../pages/NotFound';
 import ProtectedRoute from './ProtectedRoute';
 import SalesReports from '../pages/SalesReports';
 import Shipping from '../pages/Shipping';
+import Delivery from '../pages/Delivery';
 import Payments from '../pages/Payments';
 import StoreSettings from '../pages/StoreSettings';
 import Reviews from '../pages/Reviews';
 import Customers from '../pages/Customers';
+import KYCVerification from '../pages/KYCVerification';
+import SellerManagement from '../pages/SellerManagement';
+import PlatformAnalytics from '../pages/PlatformAnalytics';
+import QualityMetrics from '../pages/QualityMetrics';
+import SupportTickets from '../pages/SupportTickets';
+import ClaimsDisputes from '../pages/ClaimsDisputes';
+import PerformanceMetrics from '../pages/PerformanceMetrics';
 
 const AppRoutes = () => (
   <Router>
@@ -84,6 +92,16 @@ const AppRoutes = () => (
           <Users />
         </ProtectedRoute>
       } />
+      <Route path="/kyc" element={
+        <ProtectedRoute>
+          <KYCVerification />
+        </ProtectedRoute>
+      } />
+      <Route path="/seller-management" element={
+        <ProtectedRoute>
+          <SellerManagement />
+        </ProtectedRoute>
+      } />
       <Route path="/customers" element={
         <ProtectedRoute>
           <Customers />
@@ -97,6 +115,11 @@ const AppRoutes = () => (
       <Route path="/shipping" element={
         <ProtectedRoute>
           <Shipping />
+        </ProtectedRoute>
+      } />
+      <Route path="/delivery" element={
+        <ProtectedRoute>
+          <Delivery />
         </ProtectedRoute>
       } />
       <Route path="/payments" element={
@@ -137,6 +160,36 @@ const AppRoutes = () => (
       <Route path="/operations/payment" element={
         <ProtectedRoute>
           <Payments />
+        </ProtectedRoute>
+      } />
+      <Route path="/analytics" element={
+        <ProtectedRoute>
+          <PlatformAnalytics />
+        </ProtectedRoute>
+      } />
+      <Route path="/quality" element={
+        <ProtectedRoute>
+          <QualityMetrics />
+        </ProtectedRoute>
+      } />
+      <Route path="/support" element={
+        <ProtectedRoute>
+          <SupportTickets />
+        </ProtectedRoute>
+      } />
+      <Route path="/claims" element={
+        <ProtectedRoute>
+          <ClaimsDisputes />
+        </ProtectedRoute>
+      } />
+      <Route path="/performance" element={
+        <ProtectedRoute>
+          <PerformanceMetrics />
+        </ProtectedRoute>
+      } />
+      <Route path="/sales-reports" element={
+        <ProtectedRoute>
+          <SalesReports />
         </ProtectedRoute>
       } />
       

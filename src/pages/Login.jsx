@@ -104,34 +104,24 @@ export default function LoginPage() {
     return () => clearTimeout(debounceTimer);
   }, [inputValue]);
 
-  // Handle existing user direct login (no OTP needed)
+  // Handle existing user login - send OTP for verification
   const handleExistingUserLogin = async () => {
     setIsLoading(true);
     setError('');
     try {
-      // Direct login for existing user
-      const response = await authService.directLogin(inputValue);
-      console.log('✅ Direct login:', response);
+      // Send OTP for existing user verification
+      const response = await authService.sendOtp(inputValue);
+      console.log('📱 OTP sent to existing user:', response);
       
-      if (response.success) {
-        dispatch(login({ user: response.user, token: response.token }));
-        
-        // Check if onboarding is required (profile incomplete)
-        setTimeout(() => {
-          if (response.requiresOnboarding) {
-            console.log('ℹ️ Seller profile incomplete, going to onboarding');
-            navigate('/seller-register', { replace: true });
-          } else if (response.user?.sellerId) {
-            console.log('✅ Seller has complete profile, going to dashboard');
-            navigate('/seller', { replace: true });
-          } else {
-            console.log('ℹ️ No seller profile, going to onboarding');
-            navigate('/seller-register', { replace: true });
-          }
-        }, 300);
+      if (response.success || response) {
+        // Move to OTP verification screen
+        setStep('otp');
+        setTimer(30);
+        console.log('✅ OTP sent, moving to verification');
       }
     } catch (err) {
-      setError(err || 'Login failed. Please try again.');
+      console.error('❌ Error sending OTP:', err);
+      setError(err || 'Failed to send OTP. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -222,14 +212,16 @@ export default function LoginPage() {
         
         // Check if onboarding is required
         setTimeout(() => {
-          if (response.requiresOnboarding) {
-            console.log('ℹ️ Seller profile incomplete, going to onboarding');
-            navigate('/seller-register', { replace: true });
-          } else if (userData.sellerId) {
-            console.log('✅ Seller has complete profile, going to dashboard');
+          // If requiresOnboarding is false and user has sellerId, go to dashboard
+          if (!response.requiresOnboarding && userData.sellerId) {
+            console.log('✅ Complete seller profile found, going to dashboard');
+            console.log('Seller ID:', userData.sellerId);
             navigate('/seller', { replace: true });
           } else {
-            console.log('ℹ️ New seller, going to onboarding');
+            // Otherwise go to onboarding
+            console.log('ℹ️ Incomplete or no seller profile, going to onboarding');
+            console.log('requiresOnboarding:', response.requiresOnboarding);
+            console.log('sellerId:', userData.sellerId);
             navigate('/seller-register', { replace: true });
           }
         }, 300);
@@ -375,7 +367,7 @@ export default function LoginPage() {
                   disabled={isLoading}
                   className="text-purple-600 font-semibold hover:underline"
                 >
-                  {isLoading ? "Logging in..." : "Click here to Login →"}
+                  {isLoading ? "Sending OTP..." : "Click here to Login →"}
                 </button>
               </div>
             )}

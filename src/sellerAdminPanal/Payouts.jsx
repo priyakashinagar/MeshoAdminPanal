@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Wallet, TrendingUp, Clock, CheckCircle, IndianRupee, Download, Calendar } from 'lucide-react';
 import sellerService from '../services/sellerService';
+import adminService from '../services/adminService';
 
 export default function Payouts() {
   const [wallet, setWallet] = useState(null);
@@ -10,6 +11,10 @@ export default function Payouts() {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('ready'); // ready, history
   const [selectedOrders, setSelectedOrders] = useState([]);
+  
+  // Check if user is admin or seller
+  const userRole = JSON.parse(localStorage.getItem('user') || '{}')?.role;
+  const isAdmin = userRole === 'admin';
 
   useEffect(() => {
     fetchData();
@@ -25,19 +30,38 @@ export default function Payouts() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [walletRes, pendingRes, historyRes] = await Promise.all([
-        sellerService.getWallet(),
-        sellerService.getPendingPayouts(),
-        sellerService.getPayoutHistory({ limit: 20 })
-      ]);
       
-      console.log('💰 Wallet Response:', walletRes);
-      console.log('⏳ Pending Response:', pendingRes);
-      console.log('📜 History Response:', historyRes);
-      
-      setWallet(walletRes.wallet || walletRes);
-      setPendingPayouts(pendingRes.orders || []);
-      setPayoutHistory(historyRes.transactions || []);
+      if (isAdmin) {
+        // Admin fetches all sellers' data
+        const [pendingRes, historyRes, walletRes] = await Promise.all([
+          adminService.getAllPendingPayouts({ limit: 50 }),
+          adminService.getAllPayoutHistory({ limit: 20 }),
+          adminService.getAllWallets()
+        ]);
+        
+        console.log('💰 Admin Wallet Response:', walletRes);
+        console.log('⏳ Admin Pending Response:', pendingRes);
+        console.log('📜 Admin History Response:', historyRes);
+        
+        setWallet(walletRes.data?.summary || null);
+        setPendingPayouts(pendingRes.data?.orders || []);
+        setPayoutHistory(historyRes.data?.transactions || []);
+      } else {
+        // Seller fetches their own data
+        const [walletRes, pendingRes, historyRes] = await Promise.all([
+          sellerService.getWallet(),
+          sellerService.getPendingPayouts(),
+          sellerService.getPayoutHistory({ limit: 20 })
+        ]);
+        
+        console.log('💰 Wallet Response:', walletRes);
+        console.log('⏳ Pending Response:', pendingRes);
+        console.log('📜 History Response:', historyRes);
+        
+        setWallet(walletRes.wallet || walletRes);
+        setPendingPayouts(pendingRes.orders || []);
+        setPayoutHistory(historyRes.transactions || []);
+      }
     } catch (err) {
       setError(err.message || 'Failed to fetch payout data');
       console.error('❌ Error fetching payouts:', err);

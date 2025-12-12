@@ -1,78 +1,114 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import AdminLayout from '../components/layout/AdminLayout';
 import Card from '../components/common/Card';
-import { AlertTriangle, Package, TrendingUp } from 'lucide-react';
-import { fetchProducts, updateProduct } from '../redux/slices/productSlice';
+import { AlertTriangle, Package, TrendingUp, Loader2, Edit2, Search } from 'lucide-react';
+import inventoryService from '../services/inventoryService';
 
 const Inventory = () => {
-  const dispatch = useDispatch();
-  const { products, loading } = useSelector((state) => state.product || { products: [], loading: false });
+  const [inventory, setInventory] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [stockForm, setStockForm] = useState({ quantity: '', minimum: '' });
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [stockForm, setStockForm] = useState({ 
+    quantity: 0, 
+    type: 'addition',
+    reason: ''
+  });
+  const [stats, setStats] = useState({
+    total: 0,
+    inStock: 0,
+    lowStock: 0,
+    outOfStock: 0,
+    totalValue: 0
+  });
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    dispatch(fetchProducts());
-  }, [dispatch]);
+    fetchInventory();
+  }, []);
 
-  const handleSearchChange = (e) => {
-    setSearch(e.target.value);
+  const fetchInventory = async () => {
+    try {
+      setLoading(true);
+      console.log('📦 Fetching inventory...');
+      // Admin can view all inventory (no sellerId filter)
+      const response = await inventoryService.getAllInventory({});
+      console.log('📦 Inventory API Response:', response);
+      
+      if (response.success && response.data) {
+        const inventoryData = Array.isArray(response.data.inventory) ? response.data.inventory : [];
+        const statsData = response.data.stats || {
+          total: 0,
+          inStock: 0,
+          lowStock: 0,
+          outOfStock: 0,
+          totalValue: 0
+        };
+        
+        console.log('📦 Inventory Data:', inventoryData);
+        console.log('📦 First Item:', inventoryData[0]);
+        console.log('📦 Stats:', statsData);
+        
+        setInventory(inventoryData);
+        setStats(statsData);
+      } else {
+        console.warn('⚠️ No inventory data in response');
+        setInventory([]);
+      }
+    } catch (err) {
+      console.error('❌ Error fetching inventory:', err);
+      console.error('❌ Error details:', err.response?.data);
+      setErrorMessage(err.response?.data?.message || 'Failed to fetch inventory');
+      setInventory([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleStockUpdate = (product) => {
-    setSelectedProduct(product);
-    setStockForm({
-      quantity: product.stock?.quantity || product.stock || 0,
-      minimum: product.minimumStock || 10
+  const handleStockUpdate = (item) => {
+    setSelectedItem(item);
+    setStockForm({ 
+      quantity: 0,
+      type: 'addition',
+      reason: ''
     });
     setShowModal(true);
   };
 
-  const handleFormChange = (e) => {
-    setStockForm({ ...stockForm, [e.target.name]: e.target.value });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!selectedItem?._id) {
+      setErrorMessage('Inventory item is missing');
+      return;
+    }
+
     try {
-      const stockQuantity = Number(stockForm.quantity) || 0;
-      const updatedData = {
-        stock: {
-          quantity: stockQuantity,
-          status: stockQuantity > 0 ? 'in_stock' : 'out_of_stock',
-          lowStockThreshold: Number(stockForm.minimum) || 10
-        }
-      };
+      await inventoryService.updateStock(selectedItem._id, {
+        quantity: parseInt(stockForm.quantity),
+        type: stockForm.type,
+        reason: stockForm.reason
+      });
       
-      await dispatch(updateProduct({ id: selectedProduct._id, productData: updatedData })).unwrap();
       setSuccessMessage('Stock updated successfully!');
-      setTimeout(() => setSuccessMessage(''), 3000);
       setShowModal(false);
-      dispatch(fetchProducts());
-    } catch (error) {
-      setErrorMessage(error.message || 'Failed to update stock');
+      fetchInventory();
+      
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err) {
+      console.error('Error updating stock:', err);
+      setErrorMessage(err.response?.data?.message || 'Failed to update stock');
       setTimeout(() => setErrorMessage(''), 3000);
     }
   };
 
-  const filteredInventory = products.filter(item =>
-    item.name?.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const getLowStockItems = () => products.filter(item => {
-    const stock = item.stock?.quantity || item.stock || 0;
-    const minimum = item.minimumStock || 10;
-    return stock < minimum;
-  });
-  
-  const getTotalValue = () => products.reduce((sum, item) => {
-    const stock = item.stock?.quantity || item.stock || 0;
-    return sum + stock;
-  }, 0);
+  const filteredInventory = Array.isArray(inventory) ? inventory.filter(item => {
+    const productName = item.productId?.name || '';
+    const sku = item.sku || '';
+    return productName.toLowerCase().includes(search.toLowerCase()) ||
+           sku.toLowerCase().includes(search.toLowerCase());
+  }) : [];
 
   if (loading) {
     return (
@@ -109,9 +145,9 @@ const Inventory = () => {
             <svg xmlns="http://www.w3.org/2000/svg" className="text-purple-600" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" /></svg>
             <input
               type="text"
-              placeholder="Search Product Name"
+              placeholder="Search by Product Name or SKU..."
               value={search}
-              onChange={handleSearchChange}
+              onChange={(e) => setSearch(e.target.value)}
               className="border-0 bg-transparent text-purple-900 outline-none w-full text-lg placeholder-purple-400"
             />
           </div>
@@ -124,73 +160,123 @@ const Inventory = () => {
           </button>
         </div>
 
-        {/* Modal for Update Stock */}
-        {showModal && selectedProduct && (
-          <div className="fixed inset-0 flex items-center justify-center z-50 pl-[280px] pr-8 py-8">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg border border-purple-200 relative px-10 py-8">
-              <h2 className="text-2xl font-bold text-purple-900 mb-6">Update Stock - {selectedProduct.name}</h2>
+        {/* Update Stock Modal */}
+        {showModal && selectedItem && (
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl">
+              <h3 className="text-xl font-bold mb-4 text-purple-900">Update Stock</h3>
+              <p className="text-purple-700 mb-4">
+                Product: <strong>{selectedItem.productId?.name || 'Unknown'}</strong><br/>
+                SKU: <strong className="font-mono">{selectedItem.sku}</strong><br/>
+                Current Available: <strong>{selectedItem.stock?.available || 0}</strong>
+              </p>
+              
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-lg font-bold mb-1 text-purple-700">Current Stock</label>
-                  <input
-                    type="number"
-                    name="quantity"
-                    placeholder="Current Stock"
-                    value={stockForm.quantity}
-                    onChange={handleFormChange}
+                  <label className="block text-purple-700 font-medium mb-2">
+                    Stock Update Type
+                  </label>
+                  <select
+                    value={stockForm.type}
+                    onChange={(e) => setStockForm({ ...stockForm, type: e.target.value })}
+                    className="w-full px-4 py-2 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     required
-                    className="w-full px-5 py-2 border border-purple-200 rounded-xl shadow-sm focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all outline-none bg-purple-50"
-                  />
+                  >
+                    <option value="addition">Addition (Add Stock)</option>
+                    <option value="sale">Sale (Reduce Stock)</option>
+                    <option value="return">Return (Add Back)</option>
+                    <option value="damage">Damage (Move to Damaged)</option>
+                    <option value="adjustment">Adjustment (Set Exact)</option>
+                  </select>
                 </div>
+
                 <div>
-                  <label className="block text-lg font-bold mb-1 text-purple-700">Minimum Stock Level</label>
+                  <label className="block text-purple-700 font-medium mb-2">
+                    Quantity
+                  </label>
                   <input
                     type="number"
-                    name="minimum"
-                    placeholder="Minimum Stock"
-                    value={stockForm.minimum}
-                    onChange={handleFormChange}
+                    value={stockForm.quantity}
+                    onChange={(e) => setStockForm({ ...stockForm, quantity: e.target.value })}
+                    className="w-full px-4 py-2 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    min="0"
                     required
-                    className="w-full px-5 py-2 border border-purple-200 rounded-xl shadow-sm focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all outline-none bg-purple-50"
+                  />
+                  <p className="text-sm text-purple-600 mt-1">
+                    {stockForm.type === 'adjustment' ? 'Set exact stock quantity' : 'Enter quantity to add/remove'}
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-purple-700 font-medium mb-2">
+                    Reason
+                  </label>
+                  <input
+                    type="text"
+                    value={stockForm.reason}
+                    onChange={(e) => setStockForm({ ...stockForm, reason: e.target.value })}
+                    className="w-full px-4 py-2 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    placeholder="Enter reason for stock update"
                   />
                 </div>
-                <div className="flex justify-end gap-4 mt-6">
-                  <button type="button" className="bg-gray-200 hover:bg-gray-300 px-7 py-2 font-semibold rounded-xl" onClick={() => setShowModal(false)}>Cancel</button>
-                  <button type="submit" className="bg-gradient-to-r from-purple-600 to-pink-500 text-white px-7 py-2 font-semibold rounded-xl shadow">Update Stock</button>
+
+                <div className="flex gap-3 mt-6">
+                  <button
+                    type="button"
+                    onClick={() => setShowModal(false)}
+                    className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                  >
+                    Update Stock
+                  </button>
                 </div>
               </form>
             </div>
           </div>
         )}
 
-        {/* Dashboard Cards - Full width on laptop screens */}
+        {/* Dashboard Cards */}
         <div className="w-full mb-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 w-full">
             <Card className="p-6 border-0 shadow-lg bg-white w-full">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-purple-600 mb-2">Total Items</p>
-                  <p className="text-3xl font-normal text-purple-900">{getTotalValue()}</p>
+                  <p className="text-3xl font-normal text-purple-900">{stats.total}</p>
                 </div>
-                <Package className="text-pink-600" size={40} />
+                <Package className="text-purple-600" size={40} />
               </div>
             </Card>
             <Card className="p-6 border-0 shadow-lg bg-white w-full">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-purple-600 mb-2">Low Stock Items</p>
-                  <p className="text-3xl font-normal text-pink-600">{getLowStockItems().length}</p>
+                  <p className="text-sm text-green-600 mb-2">In Stock</p>
+                  <p className="text-3xl font-normal text-green-900">{stats.inStock}</p>
                 </div>
-                <AlertTriangle className="text-pink-600" size={40} />
+                <TrendingUp className="text-green-600" size={40} />
               </div>
             </Card>
             <Card className="p-6 border-0 shadow-lg bg-white w-full">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-purple-600 mb-2">Total Products</p>
-                  <p className="text-3xl font-normal text-purple-900">{products.length}</p>
+                  <p className="text-sm text-orange-600 mb-2">Low Stock</p>
+                  <p className="text-3xl font-normal text-orange-900">{stats.lowStock}</p>
                 </div>
-                <TrendingUp className="text-pink-600" size={40} />
+                <AlertTriangle className="text-orange-600" size={40} />
+              </div>
+            </Card>
+            <Card className="p-6 border-0 shadow-lg bg-white w-full">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-red-600 mb-2">Out of Stock</p>
+                  <p className="text-3xl font-normal text-red-900">{stats.outOfStock}</p>
+                </div>
+                <Package className="text-red-600" size={40} />
               </div>
             </Card>
           </div>
@@ -203,44 +289,89 @@ const Inventory = () => {
               <table className="w-full min-w-[800px]">
               <thead className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
                 <tr>
-                  <th className="px-3 py-4 text-left font-bold not-italic">Product</th>
-                  <th className="px-3 py-4 text-left font-bold not-italic">SKU</th>
-                  <th className="px-3 py-4 text-left font-bold not-italic">Current Stock</th>
-                  <th className="px-3 py-4 text-left font-bold not-italic">Minimum Level</th>
-                  <th className="px-3 py-4 text-left font-bold not-italic">Price</th>
-                  <th className="px-3 py-4 text-left font-bold not-italic">Status</th>
-                  <th className="px-3 py-4 text-left font-bold not-italic">Actions</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold">Product</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold">SKU</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold">Seller</th>
+                  <th className="px-4 py-3 text-center text-sm font-semibold">Available</th>
+                  <th className="px-4 py-3 text-center text-sm font-semibold">Reserved</th>
+                  <th className="px-4 py-3 text-center text-sm font-semibold">Total</th>
+                  <th className="px-4 py-3 text-center text-sm font-semibold">Status</th>
+                  <th className="px-4 py-3 text-center text-sm font-semibold">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredInventory.map((item) => {
-                  const stock = item.stock?.quantity || item.stock || 0;
-                  const minimum = item.minimumStock || 10;
-                  const isLowStock = stock < minimum;
-                  
-                  return (
-                    <tr key={item._id || item.id} className="border-b border-purple-200 hover:bg-purple-50 transition-colors">
-                      <td className="px-3 py-4 font-normal not-italic text-purple-900">{item.name}</td>
-                      <td className="px-3 py-4 font-normal not-italic text-purple-600 font-mono">{item.sku || 'N/A'}</td>
-                      <td className="px-3 py-4 font-normal not-italic text-purple-900">{stock}</td>
-                      <td className="px-3 py-4 font-normal not-italic text-purple-900">{minimum}</td>
-                      <td className="px-3 py-4 font-normal not-italic text-purple-900">₹{item.price}</td>
-                      <td className="px-3 py-4 font-normal not-italic">
-                        <span className={`px-3 py-1 rounded-full text-sm font-normal not-italic whitespace-nowrap ${isLowStock ? 'bg-pink-100 text-pink-700' : 'bg-green-100 text-green-700'}`}>
-                          {isLowStock ? 'Low Stock' : 'OK'}
+                {filteredInventory.length === 0 ? (
+                  <tr>
+                    <td colSpan="8" className="px-4 py-8 text-center text-gray-500">
+                      No inventory items found
+                    </td>
+                  </tr>
+                ) : (
+                  filteredInventory.map((item) => (
+                    <tr key={item._id} className="border-b border-purple-100 hover:bg-purple-50">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          {item.productId?.images?.[0]?.url && (
+                            <img 
+                              src={item.productId.images[0].url} 
+                              alt={item.productId.name}
+                              className="w-10 h-10 object-cover rounded-lg flex-shrink-0"
+                            />
+                          )}
+                          <div className="min-w-0">
+                            <p className="font-medium text-purple-900 text-sm truncate">{item.productId?.name || 'Unknown Product'}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="font-mono text-xs text-purple-700 bg-purple-50 px-2 py-1 rounded">
+                          {item.sku}
                         </span>
                       </td>
-                      <td className="px-3 py-4 font-normal not-italic">
-                        <button 
-                          className="text-purple-600 font-bold hover:underline"
+                      <td className="px-4 py-3">
+                        <span className="text-sm text-purple-700">
+                          {item.sellerId?.shopName || item.sellerId?.businessDetails?.businessName || 'N/A'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <span className="font-semibold text-purple-900">{item.stock?.available || 0}</span>
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <span className="text-orange-600">{item.stock?.reserved || 0}</span>
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <span className="font-semibold text-purple-700">{item.stock?.total || 0}</span>
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        {item.status === 'in-stock' ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium whitespace-nowrap">
+                            <span className="w-1.5 h-1.5 bg-green-600 rounded-full"></span>
+                            In Stock
+                          </span>
+                        ) : item.status === 'low-stock' ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-medium whitespace-nowrap">
+                            <AlertTriangle size={12} />
+                            Low Stock
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium whitespace-nowrap">
+                            <span className="w-1.5 h-1.5 bg-red-600 rounded-full"></span>
+                            Out of Stock
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <button
                           onClick={() => handleStockUpdate(item)}
+                          className="px-3 py-1.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-xs font-medium whitespace-nowrap inline-flex items-center gap-1"
                         >
-                          Update
+                          <Edit2 size={12} />
+                          Update Stock
                         </button>
                       </td>
                     </tr>
-                  );
-                })}
+                  ))
+                )}
               </tbody>
             </table>
           </div>
